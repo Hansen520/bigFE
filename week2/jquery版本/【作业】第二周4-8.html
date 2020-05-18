@@ -36,11 +36,10 @@
     Mock.mock(/\/api\/yourdomain.test/, function(options){
       // 获取url的参数num
       const num = getParams(options.url, 'num')
-      console.log(num)
         var res = {
         "status": 0,
         "msg": '我要返回mock数据了',
-        ['data|'+num]: [
+        ['users|'+num]: [
           {
             "tid|+1" : 0,
             "title": '@ctitle',
