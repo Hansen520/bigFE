@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>jquery的方式</title>
+  <script src="http://mockjs.com/dist/mock.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.js"></script>
+  
+</head>
+<body>
+  数量:<input type="text" name="" id="input" value="2">
+  <button id="btn">点击</button>
+  <pre id="show"></pre>
+
+  <script>
+    $('#btn').click(function(){
+      const val = $('#input').val();
+      $.ajax({
+        url: 'http://api/yourdomain.test',
+        type: 'get',
+        dataType: 'json',
+        data: {
+          num: val
+        }
+      }).done(function(data, status, xhr){
+        alert(1)
+          $('#show').html(JSON.stringify(data, null, 2))
+        })
+    })
+
+
+    // var obj = { aa:'11', bb: 22, cc: '33', dd: '44'}
+    // 对地址的一个拦截
+    // http://api.yourdomain
+    Mock.mock(/\/api\/yourdomain.test/, function(options){
+      // 获取url的参数num
+      const num = getParams(options.url, 'num')
+      console.log(num)
+        var res = {
+        "status": 0,
+        "msg": '我要返回mock数据了',
+        ['data|'+num]: [
+          {
+            "tid|+1" : 0,
+            "title": '@ctitle',
+            "catalog": 'index',
+            "fav": "@natural(1, 10000)",
+            "created": "@datetime('yyyy-MM-dd HH:mm:ss')",
+            "isEnd": 0,
+            "answer": '@integer(1, 100)',
+            "user": {
+              "avatar": "@image('56*56')",
+              "name": "@cname",
+              "isVip": 1,
+              "level": "@integer(1, 5)"
+            }
+          }
+        ]
+      }
+      return Mock.mock(res)
+    });
+
+
+
+        /* eslint-disable no-unused-vars */
+        let getParams = (url, key) => {
+      //构造一个含有目标参数的正则表达式对象
+      let reg = new RegExp("(^|&)" + key + "=([^&]*)(&|$)");
+      //匹配目标参数
+      let link = new URL(url)
+      let r = link.search.substr(1).match(reg);
+      //返回参数值
+      if (r != null) {
+        return decodeURI(r[2]);
+      }
+      return null;
+    }
+  </script>
+</body>
+</html>
