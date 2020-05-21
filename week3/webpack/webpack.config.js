@@ -2,6 +2,9 @@ var path = require('path');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 // 清理dist目录插件
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+// 复制包文件
+const CopyWebpackPlugin = require('copy-webpack-plugin');
+// 复制目录的plugin
 const config = {
   mode: 'development',
   entry: {
@@ -18,14 +21,14 @@ const config = {
         test: /\.(scss|sass)$/,
         use: ['style-loader', 'css-loader', 'sass-loader']
       },
-      // {
-      //   test: /\.(png|jpg|gif)$/i,
-      //   loader: 'file-loader',
-      //   options: {
-      //     name: '[name].[ext]',
-      //     outputPath: 'images/'
-      //   }
-      // },
+      {
+        test: /\.(eot|ttf|svg|woff)$/i,
+        loader: 'file-loader',
+        options: {
+          name: '[name].[ext]',
+          outputPath: 'font/'
+        }
+      },
       {
         test: /\.(png|jpg|gif)$/i,
         use: [
@@ -39,12 +42,23 @@ const config = {
             }
           }
         ]
+      },
+      {
+        test: /\.js$/,
+        loader: 'babel-loader'
       }
     ]
   },
   plugins: [
     new HtmlWebpackPlugin({template: './src/index.html'}),
-    new CleanWebpackPlugin()]
+    new CleanWebpackPlugin(),
+    new CopyWebpackPlugin({
+      patterns:[{
+        from: path.join(__dirname, 'asset'),
+        to: 'asset'
+      }]
+    })
+  ]
 }
 
 module.exports = config;
