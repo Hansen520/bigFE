@@ -1,6 +1,0 @@
-{
-  "dependencies": {
-    "koa-helmet": "^5.2.0",
-    "koa-static": "^5.0.0"
-  }
-}

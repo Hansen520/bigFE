@@ -1,5 +1,5 @@
-module.exports = function(ctx){
-  ctx.body = {
-    "message": "hello from b"
-  }
-}
+// module.exports = function(ctx){
+//   ctx.body = {
+//     "message": "hello from b"
+//   }
+// }
