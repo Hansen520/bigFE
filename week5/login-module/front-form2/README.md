@@ -1,3 +1,33 @@
+- 本周作业
+local/index.js
+``` javascript
+import { Validator } from 'vee-validate'
+
+const dictionary = {
+  // 对中文部分自定义修改
+  'zh-CN': {
+    messages: {
+      // field是对应input的name属性的attributes信息，length为属性值，如min: 4中的4
+      required: field => '*请输入' + field,
+      email: () => '*请输入正确的邮箱格式',
+      min: () => '*不符合最小长度要求',
+      length: (field, length) => '*' + field + '最小长度为' + length
+    },
+    attributes: {
+      email: '邮箱',
+      password: '密码',
+      name: '账号',
+      code: '验证码'
+    }
+  }
+}
+// 更新
+Validator.localize(dictionary)
+
+```
+
+app.vue
+``` javascript
 <template>
   <div id="app">
     <div class="layui-container">
@@ -37,7 +67,6 @@
 
 <script>
 import axios from 'axios'
-
 export default {
   name: 'app',
   data () {
@@ -103,3 +132,16 @@ input{
 }
 
 </style>
+```
+
+main.js关键代码
+``` javascript
+import VeeValidate, { Validator } from 'vee-validate'
+// method2 to zh-cn
+import './local/index'
+Vue.use(VeeValidate)
+// 实例化Validator对象
+const validator = new Validator()
+// 通过自定义利用中文格式
+validator.localize('zh-CN')
+```
