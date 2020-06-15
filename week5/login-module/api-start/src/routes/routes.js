@@ -1,6 +1,7 @@
 // const combineRouters = require('koa-combine-routers')
 import combineRouters from 'koa-combine-routers'
 import publicRouter from './publicRouter'
+import loginRouter from './loginRouter'
 
 // const arouters = require('./aRouter')
 // const brouters = require('./bRouter')
@@ -9,4 +10,4 @@ import publicRouter from './publicRouter'
 //   arouters,
 //   brouters
 // )
-export default combineRouters(publicRouter)
+export default combineRouters(publicRouter, loginRouter)

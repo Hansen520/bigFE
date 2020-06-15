@@ -38,7 +38,7 @@
         </ValidationProvider>
       </div>
       <div class="layui-form-item">
-        <button class="layui-btn" alert="1" lay-filter="*" lay-submit>提交</button>
+        <button type="button" class="layui-btn" alert="1" @click="submit" lay-filter="*" lay-submit>提交</button>
       </div>
     </form>
   </div>
@@ -49,6 +49,7 @@
 
 <script>
 import { getCode } from '@/api/getChapcha'
+import { forget } from '@/api/forget'
 export default {
   name: 'forget',
   data () {
@@ -67,6 +68,17 @@ export default {
         // console.log(res)
         if (res.code === 200) {
           this.svg = res.data
+        }
+      })
+    },
+    submit () {
+      forget({
+        email: this.email,
+        code: this.code
+      }).then((res) => {
+        console.log(res)
+        if (res.code === 200) {
+          alert('发送邮件成功')
         }
       })
     }

@@ -9,8 +9,9 @@ const koaBody = require('koa-body')
 const json = require('koa-json')
 // 就是前面加上前缀，如api/async
 router.prefix('/api')
-
+// 实例化Koa
 const app = new Koa()
+// 设置路由
 const router = new Router()
 router.get('/', ctx => {
   console.log(ctx);
@@ -55,4 +56,5 @@ app.use(cors())
 // 以json格式化输出
 app.use(json({ pretty: false, param: 'pretty' }))
 app.use(router.routes()).use(router.allowedMethods())
+// 监听3000端口
 app.listen(3000)

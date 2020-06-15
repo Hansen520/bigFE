@@ -9,6 +9,7 @@ class PublicController {
       color: true
     })
     console.log(newCaptca)
+    // 返回的数据
     ctx.body = {
       code: 200,
       data: newCaptca.data

@@ -92,6 +92,18 @@
 
 <script>
 import { getCode } from '@/api/getChapcha'
+import axios from 'axios'
+
+// const instance = axios.create({})
+// // 请求拦截器
+// instance.interceptors.request.use(config => {
+//   // 可以在请求的时候设置请求头，比如说在登入时候需要设置token等等
+//   config.headers.role = 'admin'
+//   return config
+// }, (err) => {
+//   // 后台接口请求错误
+//   console.log(err)
+// })
 
 export default {
   name: 'login',
@@ -105,6 +117,7 @@ export default {
   },
   mounted () {
     this._getCode()
+    this.posdemo()
   },
   methods: {
     _getCode () {
@@ -114,6 +127,13 @@ export default {
           this.svg = res.data
         }
       })
+    },
+    posdemo () {
+      instance.post('http://localhost:1314/api/user', {
+        name: '2',
+        email: '2@qq.com'
+      }
+      )
     }
   }
 }
