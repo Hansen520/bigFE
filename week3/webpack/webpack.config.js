@@ -4,6 +4,10 @@ var HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 // 复制包文件
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+// css的代码分割
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+// css压缩合并
+const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 // 复制目录的plugin
 const config = {
   mode: 'development',
@@ -19,7 +23,7 @@ const config = {
       {
         // sass-loader node-sass两个依赖都需要安装
         test: /\.(scss|sass)$/,
-        use: ['style-loader', 'css-loader', 'sass-loader']
+        use: ['style-loader', MiniCssExtractPlugin.loader,'css-loader', 'sass-loader']
       },
       {
         test: /\.(eot|ttf|svg|woff)$/i,
@@ -49,9 +53,17 @@ const config = {
       }
     ]
   },
+  optimization: {
+    minimizer: [new OptimizeCSSAssetsPlugin({})],
+  },
   plugins: [
     new HtmlWebpackPlugin({template: './src/index.html'}),
     new CleanWebpackPlugin(),
+    new MiniCssExtractPlugin({
+      // 如果你html直接引用则走filename，如果你是间接引用则走chunkFilename
+      filename: 'css/[name].css',
+      chunkFilename: 'css/[name].chunk.css'
+    }),
     new CopyWebpackPlugin({
       patterns:[{
         from: path.join(__dirname, 'asset'),

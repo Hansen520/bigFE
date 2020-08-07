@@ -75,7 +75,6 @@
         },
         // 刚开始打开时候
         onOpen: function() {
-          
           console.log('open:' + this.ws.readyState);
           // 发起鉴权请求
           this.ws.send(JSON.stringify({
@@ -157,9 +156,9 @@
               message: this.message
             }));
             // 清空
-            this.message = ''
+            this.message = '';
           } else {
-            alert('请输入内容')
+            alert('请输入内容');
           }
         },
         // 检查时间延迟
@@ -170,7 +169,7 @@
           this.handle = setTimeout(function() {
             _this.onClose()
             _this.init()
-          }, 1000 + 500)
+          },1000+ 500)
         }
       }
     })

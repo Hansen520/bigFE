@@ -13,21 +13,21 @@ async function send(sendInfo) {
     port: 587,
     secure: false, // true for 465, false for other ports
     auth: {
-      user: '646380243@qq.com', // generated ethereal user
-      pass: 'agesmszrhxytzbfajz', // generated ethereal password
+      user: '6463@qq.com', // generated ethereal user
+      pass: 'agesmsz', // generated ethereal password
     },
   });
 
   // let sendInfo = {
   //   code: '1222',
   //   expire: '2020-10-10',
-  //   email: '646380243@qq.com',
+  //   email: '64638@qq.com',
   //   user: 'Hansenaa'
   // }
   let url = 'http://www.baidu.com'
   // send mail with defined transport object
   let info = await transporter.sendMail({
-    from: '"认证邮件" <646380243@qq.com>', // sender address
+    from: '"认证邮件" <646@qq.com>', // sender address
     to: sendInfo.email, // list of receivers
     subject: sendInfo.user !== '' ? `你好开发者，${sendInfo.user}!,我来了` : '啥玩意', // Subject line
     text: `您的邀请码是，过期时间${sendInfo.expire}`, // plain text body

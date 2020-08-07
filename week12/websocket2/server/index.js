@@ -141,7 +141,7 @@ setInterval(() => {
     // 无心跳 并且有房间号
     if (!ws.isAlive && ws.roomId) {
       // 当且仅当有一个房间离线就减1
-      group[ws.roomId] --
+      group[ws.roomId]--
       delete ws[roomId]
       // 服务端连接异常时候终止掉,用close是只关闭本窗体,而用terminate是关闭整个程序,包括所有窗体.
       return ws.terminate()
