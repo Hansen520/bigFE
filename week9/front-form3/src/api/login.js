@@ -3,7 +3,7 @@ import axios from '@/utils/request'
 // 获取验证码，sid为唯一标识
 const getCode = (sid) => {
   console.log(sid)
-  return axios.get('/getChapcha', {
+  return axios.get('/public/getChapcha', {
     params: {
       sid: sid
     }

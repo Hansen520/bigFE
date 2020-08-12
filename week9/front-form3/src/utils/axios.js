@@ -2,7 +2,6 @@
 // 对错误的统一处理
 import axios from 'axios'
 import errorHandle from './errorHandle.js'
-// import config from '@/config'
 
 class HttpRequest {
   constructor(baseUrl) {

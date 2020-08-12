@@ -126,6 +126,7 @@ export default {
   methods: {
     _getCode () {
       let sid = this.$store.state.sid
+      // sid作为query传递给后台
       getCode(sid).then((res) => {
         if (res.code === 200) {
           this.svg = res.data

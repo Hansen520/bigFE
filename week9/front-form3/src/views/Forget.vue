@@ -56,6 +56,7 @@
 <script>
 import { getCode, forget } from '@/api/login'
 import { ValidationProvider,ValidationObserver } from 'vee-validate'
+import uuid from 'uuid/dist/v4'
 export default {
   name: 'forget',
   data () {
@@ -70,13 +71,24 @@ export default {
     ValidationObserver
   },
   mounted () {
+    let sid = ''
+    if (localStorage.getItem('sid')) {
+      sid = localStorage.getItem('sid')
+    } else {
+      sid = uuid()
+      localStorage.setItem('sid', sid)
+    }
+    this.$store.commit('setSid', sid)
     this._getCode()
   },
   methods: {
     _getCode () {
-      getCode().then((res) => {
+      let sid = this.$store.state.sid
+      // sid作为query传递给后台
+      getCode(sid).then((res) => {
         if (res.code === 200) {
           this.svg = res.data
+          console.log(res)
         }
       })
     },
