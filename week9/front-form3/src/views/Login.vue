@@ -1,5 +1,6 @@
 <template>
   <div class="layui-container fly-marginTop">
+    <!-- <alert :msg="确定" :isShow="true"></alert> -->
     <div class="fly-panel fly-panel-user" pad20>
       <div class="layui-tab layui-tab-brief" lay-filter="user">
         <ul class="layui-tab-title">
@@ -52,7 +53,7 @@
                   </div>
                   <div class="layui-form-item">
                     <label for="L_vercode" class="layui-form-label">验证码</label>
-                    <ValidationProvider name="code" rules="required|length:4" v-slot="{ errors }">
+                    <ValidationProvider name="code" ref="codefield" rules="required|length:4" v-slot="{ errors }">
                       <div class="layui-input-inline">
                         <input
                           type="text"
@@ -97,6 +98,8 @@ import { ValidationProvider, ValidationObserver } from 'vee-validate'
 import { getCode, login } from '@/api/login'
 import uuid from 'uuid/dist/v4'
 
+// import Alert from '@/components/modules/alert/Alert'
+
 export default {
   name: 'login',
   components: {
@@ -112,6 +115,8 @@ export default {
     }
   },
   mounted () {
+    // 自定义弹窗
+    window.vue = this
     let sid = ''
     if (localStorage.getItem('sid')) {
       sid = localStorage.getItem('sid')
@@ -145,7 +150,24 @@ export default {
         sid: this.$store.state.sid
       }).then((res)=>{
         if(res.code === 200) {
+          this.username = ''
+          this.password = ''
+          this.code = ''
+          requestAnimationFrame(() => {
+            // 清空表单
+            this.$refs.observer.reset() // 整个表单进行重置的操作
+          })
           console.log(res)
+        } else if(res.code = 401) {
+          // 验证错误为服务器传回来的错误,后面必需以数组的方式
+          this.$refs.codefield.setErrors([res.msg])
+        }
+      }).catch((err)=>{
+        const data = err.response.data
+        if (data.code === 500) {
+          this.$alert('用户名和密码验证失败了，请检查噢~')
+        } else {
+          this.$alert('服务器错误')
         }
       })
     }

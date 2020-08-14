@@ -16,9 +16,9 @@
               <form method="post">
                 <div class="layui-form-item">
                   <label for="L_email" class="layui-form-label">邮箱</label>
-                  <ValidationProvider rules="required|email" name="email" v-slot="{ errors }">
+                  <ValidationProvider rules="required|email" ref="usernamefield" name="username" v-slot="{ errors }">
                     <div class="layui-input-inline">
-                      <input type="text" id="L_email" name="email" v-model="email" autocomplete="off" placeholder="请输入邮箱" class="layui-input">
+                      <input type="text" id="L_email" name="email" v-model="username" autocomplete="off" placeholder="请输入邮箱" class="layui-input">
                     </div>
                     <div class="layui-form-mid">
                       <div class="layui-word-aux">将会成为您唯一的登入名</div>
@@ -30,7 +30,7 @@
                   <label for="L_username" class="layui-form-label">昵称</label>
                   <ValidationProvider rules="required|min:4|name" name="name" v-slot="{ errors }">
                     <div class="layui-input-inline">
-                      <input type="text" id="L_username" name="username" v-model="username" autocomplete="off" placeholder="请输入用户名" class="layui-input">
+                      <input type="text" id="L_username" name="name" v-model="name" autocomplete="off" placeholder="请输入用户名" class="layui-input">
                     </div>
                     <div class="layui-form-mid">
                       <div class="error">{{ errors[0] }}</div>
@@ -52,28 +52,25 @@
                   </div>
                   <div class="layui-form-item">
                     <label for="L_repass" class="layui-form-label">确认密码</label>
-                    <ValidationProvider rules="required" name="confirmation">
+                    <ValidationProvider rules="required" vid="confirmation">
                       <div class="layui-input-inline">
                         <input type="password" name="repassword" v-model="repassword" placeholder="请确认密码" autocomplete="off" class="layui-input">
                       </div>
-                      <!-- <div class="layui-form-mid">
-                        <div class="error">{{ errors[0] }}</div>
-                      </div> -->
                     </ValidationProvider>
                   </div>
                   </ValidationObserver>
                 <div class="layui-form-item">
                   <label for="L_vercode" class="layui-form-label">验证码</label>
                   <ValidationProvider rules="required|length:4" name="code"  v-slot="{ errors }">
-                  <div class="layui-input-inline">
-                    <input type="text" name="code" v-model="code" placeholder="请输入验证码" autocomplete="off" class="layui-input">
-                  </div>
-                  <div class="layui-form-mid">
-                    <span class="error">{{ errors[0] }}</span>
-                  </div>
-                  <div class="layui-form-mid svg">
-                    <span v-html="svg" @click="_getCode()" class="svg"></span>
-                  </div>
+                    <div class="layui-input-inline">
+                      <input type="text" name="code" v-model="code" placeholder="请输入验证码" autocomplete="off" class="layui-input">
+                    </div>
+                    <div class="layui-form-mid">
+                      <span class="error">{{ errors[0] }}</span>
+                    </div>
+                    <div class="layui-form-mid svg">
+                      <span v-html="svg" @click="_getCode()" class="svg"></span>
+                    </div>
                   </ValidationProvider>
                 </div>
                 <div class="layui-form-item">
@@ -109,6 +106,7 @@ export default {
       email: '',
       username: '',
       password: '',
+      name: '',
       repassword: '',
       code: '',
       svg: ''
@@ -148,8 +146,28 @@ export default {
         code: this.code,
         sid: this.$store.state.sid
       }).then(res => {
+        console.log(res)
         if (res.code === 200) {
-          console.log(res);
+          this.username = ''
+          this.password = ''
+          this.repassword = ''
+          this.name = ''
+          this.code = ''
+          // 表单重置
+          this.$refs.observer.reset()
+          requestAnimationFrame(() => {
+            
+          })
+          this.$alert('注册成功')
+          setTimeout(()=>{
+            // 跳转到登入界面，让用户登入
+            this.$router.push('/login')
+          }, 1000)
+          
+          console.log(res)
+        } else {
+          console.log(res.msg)
+          this.$refs.observer.setErrors(res.msg)
         }
       });
     }

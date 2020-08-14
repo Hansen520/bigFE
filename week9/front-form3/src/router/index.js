@@ -12,7 +12,16 @@ const routes = [
   {
     path: '/reg',
     name: 'reg',
-    component: () => import(/* webpackChunkName: 'reg' */ '../views/Reg')
+    component: () => import(/* webpackChunkName: 'reg' */ '../views/Reg'),
+    beforeEnter: (to, from, next) => {
+      if (from.name === 'login') {
+        // 如果说来自于登入界面则可以跳转到本页面
+        next()
+      } else {
+        // 不然就回到登入界面
+        next('/login')
+      }
+    }
   },
   {
     path: '/forget',

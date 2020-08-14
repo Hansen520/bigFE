@@ -16,7 +16,6 @@ extend('name', {
   },
   message: '不能以纯数字为昵称'
 })
-
 // 中文包扩展
 localize('zh_CN', {
   // 对所有的required都这样子
