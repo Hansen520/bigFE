@@ -14,8 +14,8 @@ import path from 'path'
 
 const app = new Koa()
 
-// 定义公共路径，不需要jwt鉴权
-const jwt = JWT({secret: config.JWT_SECRET}).unless({ path: [/^\/public/, /\/login/] })
+// 定义公共路径，不需要jwt鉴权（比如public和login是不需鉴权的）
+const jwt = JWT({secret: config.JWT_SECRET}).unless({ path: [/^\/public/, /^\/login/] })
 
 // 请求的安全头
 // const helmet = require('koa-helmet')

@@ -79,7 +79,7 @@ $btn-dark: darken($btn-main, 5%);
   margin: -75px 0 0 -75px;
   padding: 20px 10px;
   box-shadow: 0 5px 8px rgba(0, 0, 0, 0.05);
-  z-index: 3000;
+  z-index: 30000;
   display: flex;
   flex-flow: column nowrap;
   justify-content: center;

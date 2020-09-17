@@ -58,7 +58,7 @@ class LoginController {
           delete userObj[item]
         })
         // 验证通过返回Token
-        let token = jsonwebtoken.sign({_id: 'hansen', exp: Math.floor(Date.now()/1000) + 60 * 60 * 24}, config.JWT_SECRET)
+        let token = jsonwebtoken.sign({_id: userObj._id, exp: Math.floor(Date.now()/1000) + 60 * 60 * 24}, config.JWT_SECRET)
         ctx.body = {
           code: 200,
           data: userObj,
