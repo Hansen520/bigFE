@@ -34,9 +34,11 @@ const setValue = (key, value, time) => {
   }
   if (typeof value === 'string') {
     // 值为string时候
-    if (typeof time !== 'string'){
+    if (typeof time !== 'undefined'){
       // 设置过期时间
-      client.set(key, value, 'EX', time)
+      client.set(key, value, 'EX', time, (err, result) => {
+        console.log('cient.set -> err', err, result)
+      })
     } else{
       client.set(key, value)
     }

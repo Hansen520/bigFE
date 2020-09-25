@@ -29,6 +29,16 @@ const routes = [
     component: () => import(/* webpackChunkName: 'login' */ '../views/Login')
   },
   {
+    path: '/confirm',
+    name: 'confirm',
+    component: () => import(/* webpackChunkName: 'confirm' */ '../views/Confirm')
+  },
+  {
+    path: '/reset',
+    name: 'reset',
+    component: () => import(/* webpackChunkName: 'reset' */ '../views/Reset')
+  },
+  {
     path: '/reg',
     name: 'reg',
     component: () => import(/* webpackChunkName: 'reg' */ '../views/Reg'),
@@ -123,7 +133,14 @@ const routes = [
         component: () => import(/* webpackChunkName: 'others' */ '../components/user/Others'),
       }
     ],
-    
+  },
+  {
+    path: '/404',
+    component: () => import(/* webpackChunkName: 'nofound' */ '../views/NoFound')
+  },
+  {
+    path: '*',
+    redirect: '/404'
   }
 ]
 

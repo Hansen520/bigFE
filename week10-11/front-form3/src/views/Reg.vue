@@ -16,7 +16,7 @@
               <form method="post">
                 <div class="layui-form-item">
                   <label for="L_email" class="layui-form-label">邮箱</label>
-                  <ValidationProvider rules="required|email" ref="usernamefield" name="username" v-slot="{ errors }">
+                  <validation-provider rules="required|email" ref="usernamefield" name="username" v-slot="{ errors }">
                     <div class="layui-input-inline">
                       <input type="text" id="L_email" name="email" v-model="username" autocomplete="off" placeholder="请输入邮箱" class="layui-input">
                     </div>
@@ -24,23 +24,23 @@
                       <div class="layui-word-aux">将会成为您唯一的登入名</div>
                       <div class="error">{{ errors[0] }}</div>
                     </div>
-                  </ValidationProvider>
+                  </validation-provider>
                 </div>
                 <div class="layui-form-item">
                   <label for="L_username" class="layui-form-label">昵称</label>
-                  <ValidationProvider rules="required|min:4|name" name="name" v-slot="{ errors }">
+                  <validation-provider rules="required|min:4|name" name="name" v-slot="{ errors }">
                     <div class="layui-input-inline">
                       <input type="text" id="L_username" name="name" v-model="name" autocomplete="off" placeholder="请输入用户名" class="layui-input">
                     </div>
                     <div class="layui-form-mid">
                       <div class="error">{{ errors[0] }}</div>
                     </div>
-                  </ValidationProvider>
+                  </validation-provider>
                 </div>
-                <ValidationObserver>
+   
                   <div class="layui-form-item">
                     <label for="L_pass" class="layui-form-label">密码</label>
-                    <ValidationProvider rules="required|min:6|max:16|confirmed:confirmation" name="password" v-slot="{ errors }">
+                    <validation-provider rules="required|min:6|max:16|confirmed:confirmation" name="password" v-slot="{ errors }">
                       <div class="layui-input-inline">
                         <input type="password" name="password" v-model="password" placeholder="请输入密码" autocomplete="off" class="layui-input">
                       </div>
@@ -48,20 +48,19 @@
                         <div class="layui-word-aux">6到16个字符</div>
                         <div class="error">{{ errors[0] }}</div>
                       </div>
-                    </ValidationProvider>
+                    </validation-provider>
                   </div>
                   <div class="layui-form-item">
                     <label for="L_repass" class="layui-form-label">确认密码</label>
-                    <ValidationProvider rules="required" vid="confirmation">
+                    <validation-provider rules="required" vid="confirmation">
                       <div class="layui-input-inline">
                         <input type="password" name="repassword" v-model="repassword" placeholder="请确认密码" autocomplete="off" class="layui-input">
                       </div>
-                    </ValidationProvider>
+                    </validation-provider>
                   </div>
-                  </ValidationObserver>
                 <div class="layui-form-item">
                   <label for="L_vercode" class="layui-form-label">验证码</label>
-                  <ValidationProvider rules="required|length:4" name="code"  v-slot="{ errors }">
+                  <validation-provider rules="required|length:4" name="code"  v-slot="{ errors }">
                     <div class="layui-input-inline">
                       <input type="text" name="code" v-model="code" placeholder="请输入验证码" autocomplete="off" class="layui-input">
                     </div>
@@ -71,7 +70,7 @@
                     <div class="layui-form-mid svg">
                       <span v-html="svg" @click="_getCode()" class="svg"></span>
                     </div>
-                  </ValidationProvider>
+                  </validation-provider>
                 </div>
                 <div class="layui-form-item">
                   <button class="layui-btn" type="button" @click="validate().then(_submit)" lay-filter="*" lay-submit>立即注册</button>
@@ -176,7 +175,7 @@ export default {
 
 </script>
 
-<style>
+<style lang="scss" scoped>
 .error{
   color: red;
   padding-left: 5px;

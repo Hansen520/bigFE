@@ -16,7 +16,7 @@
                 <form method="post">
                   <div class="layui-form-item">
                     <label for="L_username" class="layui-form-label">用户名</label>
-                    <ValidationProvider rules="required|email" name="email" v-slot="{ errors }">
+                    <validation-provider rules="required|email" name="email" v-slot="{ errors }">
                       <div class="layui-input-inline">
                         <input
                           type="text"
@@ -30,11 +30,11 @@
                       <div class="layui-form-mid">
                         <span style="color: #c00">{{ errors[0] }}</span>
                       </div>
-                    </ValidationProvider>
+                    </validation-provider>
                   </div>
                   <div class="layui-form-item">
                     <label for="L_pass" class="layui-form-label">密码</label>
-                    <ValidationProvider rules="required|min:6" v-slot="{ errors }">
+                    <validation-provider rules="required|min:6" v-slot="{ errors }">
                     <div class="layui-input-inline">
                       <input
                         type="password"
@@ -49,11 +49,11 @@
                     <div class="layui-form-mid">
                       <span style="color: #c00">{{ errors[0] }}</span>
                     </div>
-                    </ValidationProvider>
+                    </validation-provider>
                   </div>
                   <div class="layui-form-item">
                     <label for="L_vercode" class="layui-form-label">验证码</label>
-                    <ValidationProvider name="code" ref="codefield" rules="required|length:4" v-slot="{ errors }">
+                    <validation-provider name="code" ref="codefield" rules="required|length:4" v-slot="{ errors }">
                       <div class="layui-input-inline">
                         <input
                           type="text"
@@ -70,7 +70,7 @@
                       <div class="layui-form-mid">
                         <span @click="_getCode()" v-html="svg" class="svg"></span>
                       </div>
-                    </ValidationProvider>
+                    </validation-provider>
                   </div>
                   <div class="layui-form-item">
                     <button class="layui-btn" type="button" @click="validate().then(submit)" lay-filter="*" lay-submit>立即登录</button>
@@ -97,8 +97,6 @@
 import { ValidationProvider, ValidationObserver } from 'vee-validate'
 import { getCode, login } from '@/api/login'
 import uuid from 'uuid/dist/v4'
-
-// import Alert from '@/components/modules/alert/Alert'
 
 export default {
   name: 'login',
@@ -150,6 +148,9 @@ export default {
         sid: this.$store.state.sid
       }).then((res)=>{
         if(res.code === 200) {
+          // 存储用户的登入名以备后续更改
+          res.data.username = this.username
+          console.log(this.username)
           this.$store.commit('setUserInfo', res.data)
           this.$store.commit('setIsLogin', true)
           this.$store.commit('setToken', res.token)
@@ -157,9 +158,10 @@ export default {
           this.password = ''
           this.code = ''
           requestAnimationFrame(() => {
-            // 清空表单
-            this.$refs.observer.reset() // 整个表单进行重置的操作
+            
           })
+          // 清空表单
+            this.$refs.observer.reset() // 整个表单进行重置的操作
           this.$router.push({name: 'index'})
           console.log(res)
         } else if(res.code = 401) {

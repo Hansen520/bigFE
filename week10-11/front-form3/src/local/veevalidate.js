@@ -30,7 +30,7 @@ localize('zh_CN', {
     password: '密码',
     repassword: '确认密码',
     name: '昵称',
-    username: '昵称',
+    username: '用户名',
     code: '验证码',
     title: '标题',
     catalog: '分类'

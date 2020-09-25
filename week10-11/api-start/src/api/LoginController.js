@@ -5,21 +5,46 @@ import moment from 'dayjs'
 // token校验库
 import jsonwebtoken from 'jsonwebtoken'
 import config from '../config'
-import { checkCode } from '../common/Utils'
+import { checkCode, getJWTPayload } from '../common/Utils'
 import User from '../model/User'
+import signRecord from '../model/SignRecord'
+import uuid from 'uuid/dist/v4'
+import { setValue, getValue } from '../config/RedisConfig'
 
 class LoginController {
   constructor(){
   }
+  // 忘记密码
   async forget(ctx) {
     const { body } = ctx.request
-    console.log(body)
+    const isHasUser = await User.findOne({ username: body.username })
+    console.log(isHasUser)
+    if(!isHasUser){
+      ctx.body = {
+        code: 404,
+        msg: '当前用户名邮箱不存在'
+      }
+      return
+    }
     try {
+      const key = uuid()
+      // 通过忘记密码设置key，然后传递到发送邮箱的方式放到async reset()里面
+      setValue(
+        key,
+        jsonwebtoken.sign({ _id: isHasUser._id}, config.JWT_SECRET, {
+          expiresIn: '30m'
+        }),
+        30 * 60
+      )
       let result = await send({
-        code: '8868',
+        type: 'forgetpassword',
+        data: {
+          key: key,
+          username: body.username
+        },
         expire: moment().add(30, 'minutes').format('YYYY-MM-DD HH:mm:ss'),
-        email: body.email,
-        user: 'Hannnsnen'
+        email: body.username,
+        user: isHasUser.name ? isHasUser.name : body.username
       })
       // 返回的数据
       ctx.body = {
@@ -27,16 +52,16 @@ class LoginController {
         data: result,
         msg: '邮件发送成功'
       }
-    }catch(e) {
+    } catch(e) {
       console.log(e)
     }
   }
+  // 登入
   async login(ctx) {
     // 接收用户的数据
     const { body } = ctx.request
     let sid = body.sid
     let code = body.code
-    console.log(sid,code)
     // 验证图片验证码的时效性，正确性
     let result = await checkCode(sid, code)
     console.log('check OK')
@@ -59,6 +84,18 @@ class LoginController {
         })
         // 验证通过返回Token
         let token = jsonwebtoken.sign({_id: userObj._id, exp: Math.floor(Date.now()/1000) + 60 * 60 * 24}, config.JWT_SECRET)
+        // 加入isSign属性,就是做一个标记属性
+        const SignRecord = await signRecord.findByUid(userObj._id)
+        if (SignRecord !== null){
+          if(moment(SignRecord.created).format('YYYY-MM-DD') === moment().format('YYYY-MM-DD')){
+            userObj.isSign = true
+          } else {
+            userObj.isSign = false
+          }
+          userObj.lastSign = signRecord.created
+        } else {
+          // 用户无签到记录
+        }
         ctx.body = {
           code: 200,
           data: userObj,
@@ -80,6 +117,7 @@ class LoginController {
     }
     
   }
+  // 注册
   async reg(ctx) {
     // 接收客户端的数据
     const { body } = ctx.request 
@@ -131,6 +169,52 @@ class LoginController {
     ctx.body = {
       code: 500,
       msg: msg
+    }
+  }
+  // 重置密码
+  async reset(ctx){
+    // 接收客户端的数据
+    const { body } = ctx.request
+    let sid = body.sid
+    let code = body.code
+    let msg = {}
+    // 验证图片大的正确性，时效性
+    let result = await checkCode(sid, code)
+    if(!body.key){
+      ctx.body = {
+        code: 500,
+        msg: '请求参数异常，请重新获取链接'
+      }
+      return
+    }
+    if(!result){
+      msg.code = ['验证码已经失效，请重新获取！']
+      ctx.body = {
+        code: 500,
+        msg: msg
+      }
+      return
+    }
+    const token = await getValue(body.key)
+    if(token){
+      const obj = getJWTPayload('Bearer ' + token)
+      // 密码加密
+      body.password = await bcrypt.hash(body.password, 5)
+      await User.updateOne(
+        { _id: obj._id },
+        {
+          password: body.password
+        }
+      )
+      ctx.body = {
+        code: 200,
+        msg: '更新用户密码成功！'
+      }
+    } else {
+      ctx.body = {
+        code: 500,
+        msg: '链接已经失效'
+      }
     }
   }
 

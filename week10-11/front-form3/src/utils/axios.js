@@ -3,6 +3,8 @@
 import axios from 'axios'
 import errorHandle from './errorHandle.js'
 const CancelToken = axios.CancelToken
+import store from '@/store'
+import publicConfig from '@/config'
 
 class HttpRequest {
   constructor(baseUrl) {
@@ -13,7 +15,7 @@ class HttpRequest {
     const config = {
       baseURL: this.baseUrl,
       headers : {
-        'Content-Type': 'application/json;charset=utf-8'
+        'Content-Type': 'application/json;charset=utf-8',
       },
       timeout: 10000
     }
@@ -29,6 +31,16 @@ class HttpRequest {
   interceptors(instance) {
     // 请求拦截
     instance.interceptors.request.use((config)=>{
+      let isPublic = false
+      publicConfig.publicPath.map((path) => {
+        // 用来判断是否不需要token, 如果不需要则不用带上token
+        isPublic = isPublic || path.test(config.use)
+      })
+      const token = store.state.token
+      if(!isPublic && token){
+        config.headers.Authorization = 'Bearer ' + token
+      }
+
       let key = config.url + '&' + config.method;
       this.removePending(key, true)
       config.cancelToken = new CancelToken((c) => {

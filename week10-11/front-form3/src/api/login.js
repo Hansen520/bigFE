@@ -28,5 +28,11 @@ const reg = (regInfo) => {
     ...regInfo
   })
 }
+// 重置密码
+const reset = (resetInfo) => {
+  return axios.post('/login/reset', {
+    ...resetInfo
+  })
+}
 
-export { forget, getCode, login, reg }
+export { forget, getCode, login, reg, reset }

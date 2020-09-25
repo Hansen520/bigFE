@@ -1,5 +1,7 @@
 "use strict";
 import nodemailer from 'nodemailer'
+import config from './index'
+import qs from 'qs'
 
 // async..await is not allowed in global scope, must use a wrapper
 async function send(sendInfo) {
@@ -13,23 +15,20 @@ async function send(sendInfo) {
     port: 587,
     secure: false, // true for 465, false for other ports
     auth: {
-      user: '6463@qq.com', // generated ethereal user
-      pass: 'agesmsz', // generated ethereal password
+      user: '646380243@qq.com', // generated ethereal user
+      pass: 'irpjwjajkenbbbfh', // generated ethereal password
     },
   });
 
-  // let sendInfo = {
-  //   code: '1222',
-  //   expire: '2020-10-10',
-  //   email: '64638@qq.com',
-  //   user: 'Hansenaa'
-  // }
-  let url = 'http://www.baidu.com'
+  const baseUrl = config.baseUrl
+  const route = sendInfo.type === 'email' ? '/confirm' : '/reset'
+  const url = `${baseUrl}/#${route}?${qs.stringify(sendInfo.data)}`
+
   // send mail with defined transport object
   let info = await transporter.sendMail({
-    from: '"认证邮件" <646@qq.com>', // sender address
+    from: '"认证邮件" <646380243@qq.com>', // sender address
     to: sendInfo.email, // list of receivers
-    subject: sendInfo.user !== '' ? `你好开发者，${sendInfo.user}!,我来了` : '啥玩意', // Subject line
+    subject: sendInfo.user !== '' && sendInfo.type !== 'email' ? `你好开发者，${sendInfo.user}!,我来了` : '欢迎来到忘记密码平台邮件确认', // Subject line
     text: `您的邀请码是，过期时间${sendInfo.expire}`, // plain text body
     html: `<div style="border: 1px solid #dcdcdc;color: #676767;width: 600px; margin: 0 auto; padding-bottom: 50px;position: relative;">
     <div style="height: 60px; background: #393d49; line-height: 60px; color: #58a36f; font-size: 18px;padding-left: 10px;">Imooc社区——欢迎来到官方社区</div>

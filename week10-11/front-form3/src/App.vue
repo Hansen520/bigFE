@@ -40,20 +40,23 @@ export default {
   .mr#{$i}{
     margin-right: $i * 10 + px !important;
   }
+  .mt#{$i}{
+    margin-right: $i * 10 + px !important;
+  }
 }
 /* .pd20{
   padding: 20px;
 } */
-.mt20{
-  margin-top: -20px;
-}
+
 // .pl0{
 //   padding-left: 0;
 // }
 .orange{
   color: #ff5722;
 }
-
+.grey{
+  color: #aaa;
+}
 .text-center{
   text-align: center;
 }

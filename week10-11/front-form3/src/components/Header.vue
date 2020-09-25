@@ -6,22 +6,19 @@
     </a>
     <ul class="layui-nav fly-nav layui-hide-xs">
       <li class="layui-nav-item layui-this">
-        <a href="/"><i class="iconfont icon-jiaoliu"></i>交流</a>
+        <router-link to="/1212">登入</router-link>
       </li>
       <li class="layui-nav-item">
-        <a href="case/case.html"><i class="iconfont icon-iconmingxinganli"></i>案例</a>
+        <router-link to="/4234">框架</router-link>
       </li>
       <li class="layui-nav-item">
-        <a href="/" target="_blank"><i class="iconfont icon-ui"></i>框架</a>
+        <router-link to="/434">结构</router-link>
       </li>
     </ul>
 
     <ul class="layui-nav fly-nav-user">
       <template v-if="!isShow">
         <!-- 未登入的状态 -->
-        <li class="layui-nav-item">
-          <a class="iconfont icon-touxiang layui-hide-xs" href="../user/login.html"></a>
-        </li>
         <li class="layui-nav-item">
           <router-link :to="{name: 'login'}">登入</router-link>
         </li>
@@ -111,7 +108,7 @@ export default {
         this.$store.commit('setToken', '')
         this.$store.commit('setUserInfo', '')
         this.$store.commit('setIsLogin', false)// 登入
-        this.$router.push({name: 'index'})
+        this.$router.push({name: 'index'}, ()=>{})
       }, ()=>{})
     }
   }
