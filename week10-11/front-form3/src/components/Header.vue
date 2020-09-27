@@ -43,15 +43,17 @@
           </a>
           <dl class="layui-nav-child layui-anim layui-anim-upbit" :class="{'layui-show': isHover}">
             <dd>
-              <router-link :to="{name: 'set'}" tag="a">
+              <router-link :to="{name: 'info'}" tag="a">
                 <i class="layui-icon">&#xe620;</i>基本设置
               </router-link>
             </dd>
             <dd>
-              <router-link :to="{name: 'posts'}" tag="a">
+              <router-link :to="{name: 'mypost'}" tag="a">
                 <i class="iconfont icon-tongzhi" style="top: 4px;"></i>我的消息
               </router-link>
-            <dd><a href="user/home.html"><i class="layui-icon" style="margin-left: 2px; font-size: 22px;">&#xe68e;</i>我的主页</a></dd>
+            <dd>
+              <router-link :to="{name: 'index'}"><i class="layui-icon" style="margin-left: 2px; font-size: 22px;">&#xe68e;</i>我的主页</router-link>
+            </dd>
             <hr style="margin: 5px 0;">
             <dd><a href="javscript:void(0)" @click="loginout()" style="text-align: center;">退出</a></dd>
           </dl>
@@ -102,6 +104,7 @@ export default {
     },
     // 退出登入
     loginout(){
+      let user = this.$store.state.userInfo
       this.$confirm('确认要退出么?', ()=>{
         // 清空所有信息
         localStorage.clear()
@@ -109,7 +112,7 @@ export default {
         this.$store.commit('setUserInfo', '')
         this.$store.commit('setIsLogin', false)// 登入
         this.$router.push({name: 'index'}, ()=>{})
-      }, ()=>{})
+      })
     }
   }
 }

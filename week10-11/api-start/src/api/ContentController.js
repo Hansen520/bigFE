@@ -1,6 +1,10 @@
-const { default: PostModel } = require("../model/Post")
 import Post from '../model/Post'
 import Links from '../model/Links'
+import fs from 'fs'
+import { v4 as uuidv4 } from 'uuid'
+import moment from 'dayjs'
+import config from '../config'
+import { dirExists } from '../common/Utils'
 
 class ContentController {
   async getPostList (ctx) {
@@ -45,7 +49,7 @@ class ContentController {
       // 筛选一个数据，因为tag为数组
       options.tags = { $elemMatch: { name:  body.tag } }
     }
-    const result = await PostModel.getList(options, sort, page, limit)
+    const result = await Post.getList(options, sort, page, limit)
     
     ctx.body = {
       code: 200,
@@ -78,6 +82,51 @@ class ContentController {
       data: result
     }
   }
+  // 上传图片
+  async uploadImg (ctx) {
+    const file = ctx.request.files.file
+    console.log(file)
+    // 图片名称、图片格式、存储的位置，返回前台可以读取的路径
+    const ext = file.name.split('.').pop()
+    const dir = `${config.uploadPath}/${moment().format('YYYYMMDD')}`
+    // 判断路径是否存在，如果不存在则重新定义
+    await dirExists(dir)
+    // 存储文件到指定的路径
+    // 给文件一个唯一的名称
+    const picname = uuidv4()
+    const destPath = `${dir}/${picname}.${ext}`
+    // 读写流
+    const reader = fs.createReadStream(file.path, {
+      highWaterMark: 1 * 1024
+    })
+    const upStream = fs.createWriteStream(destPath)
+    const filePath = `/${moment().format('YYYYMMDD')}/${picname}.${ext}`
+    reader.pipe(upStream)
+    // let totalLength = 0
+    // // 流的读操作
+    // reader.on('data', (chunk) => {
+    //   // 数据块的拼接
+    //   totalLength += chunk.length
+    //   if(upStream.write(chunk) === false){
+    //     reader.pause()
+    //   }
+    //   console.log(totalLength)
+    // })
+
+    // reader.on('drain', () => {
+    //   reader.resume()
+    // })
+
+    // reader.on('end', () => {
+    //   upStream.end()
+    // })
+    ctx.body = {
+      code: 200,
+      msg: '图片上传成功',
+      data: filePath
+    }
+  }
+
 }
 
 export default new ContentController()

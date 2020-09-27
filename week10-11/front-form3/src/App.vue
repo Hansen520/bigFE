@@ -66,4 +66,7 @@ export default {
 .text-right{
   text-align: right;
 }
+a{
+  cursor: pointer;
+}
 </style>

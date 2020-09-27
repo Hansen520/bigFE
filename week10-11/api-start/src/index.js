@@ -26,7 +26,18 @@ const jwt = JWT({secret: config.JWT_SECRET}).unless({ path: [/^\/public/, /^\/lo
 // app.use(router())
 // 整合,使用koa-compose继承中间件
 const middleware = compose([
-  koaBody(),
+  koaBody({
+    multipart: true,
+    formidable: {
+      // 保存后缀
+      keepExtensions: true,
+      // 上传时候图片大小
+      maxFieldsSize: 5 * 1024 * 1024
+    },
+    onError: err => {
+      console.log(err)
+    }
+  }),
   statics(path.join(__dirname, '../assets')),
   cors(),
   helmet(),

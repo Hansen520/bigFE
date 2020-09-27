@@ -27,6 +27,7 @@ localize('zh_CN', {
   // key为name, value为对应的中文field名称进行重写
   names: {
     email: '邮箱',
+    oldpassword: '旧密码',
     password: '密码',
     repassword: '确认密码',
     name: '昵称',

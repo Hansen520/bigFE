@@ -10,7 +10,6 @@ Vue.use(VueRouter)
 const routes = [
   {
     path: '/',
-    name: 'home',
     component: Home,
     children: [{
       path: '',
@@ -65,7 +64,6 @@ const routes = [
   },
   {
     path: '/center',
-    name: 'center',
     // 绑定路由云信息
     meta: { requiresAuth: true },
     linkExactActiveClass: 'layui-this',
@@ -79,7 +77,6 @@ const routes = [
       },
       {
         path: 'set',
-        name: 'set',
         component: () => import(/* webpackChunkName: 'settings' */ '../components/user/Settings'),
         children: [
           {
@@ -107,7 +104,6 @@ const routes = [
       },
       {
         path: 'posts',
-        name: 'posts',
         component: () => import(/* webpackChunkName: 'user-posts' */ '../components/user/Posts'),
         children: [
         {

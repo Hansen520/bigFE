@@ -42,8 +42,7 @@ export default {
       current: 0,
       isSign: false,
       countdown: '',// 倒计时
-      msgTime: '',
-      diffTime: 0,// 倒计时差值
+      msgTime: ''
     }
   },
   mounted () {
@@ -60,25 +59,8 @@ export default {
       this.isSign = isSign
     }
     
+    this.nextSignTime()
     
-    // 倒计时签到功能
-    const nowDatemm = moment().format('YYYY-MM-DD H:m:s')
-    const nextDaymm00 = moment(lastDate).add(1, 'days').startOf('day').format('YYYY-MM-DD H:m:s')
-    this.diffTime = moment(nextDaymm00).diff(moment(nowDatemm), 'second')
-    this.msgTime = `${Math.floor(this.diffTime/3600).toString().padStart(2,0)}: ${Math.floor(this.diffTime%3600/60).toString().padStart(2,0)}: ${Math.floor(this.diffTime%60).toString().padStart(2,0)}`
-    this.countdown = setInterval(()=>{
-    const nowDatemm = moment().format('YYYY-MM-DD H:m:s')
-    const nextDaymm00 = moment(lastDate).add(1, 'days').startOf('day').format('YYYY-MM-DD H:m:s')
-    this.diffTime = moment(nextDaymm00).diff(moment(nowDatemm), 'second')
-    this.msgTime = `${Math.floor(this.diffTime/3600).toString().padStart(2,0)}: ${Math.floor(this.diffTime%3600/60).toString().padStart(2,0)}: ${Math.floor(this.diffTime%60).toString().padStart(2,0)}`
-      if(this.diffTime <= 0){
-        this.isSign = false
-        clearInterval(this.countdown)
-        let user = this.$store.state.userInfo
-        user.isSign = false
-        this.$store.commit('setUserInfo', user)
-      }
-    }, 1000)
 
 
   },
@@ -86,6 +68,7 @@ export default {
     isLogin(){
       return this.$store.state.isLogin
     },
+    
     favs (){
       let count = parseInt(this.count)
       let result = 0
@@ -129,6 +112,32 @@ export default {
     },
     choose(value){
       this.current = value
+    },
+    nextSignTime(){
+      clearInterval(this.countdown)
+      const newDate = moment().add(1, 'day').format('YYYY-MM-DD')
+      // 获取下一天0时与现在的秒时,注意前面的空格
+      let seconds = moment(newDate + ' 00:00:00').diff(moment(), 'second')
+      let hour = Math.floor(seconds / 3600)
+      let min = Math.floor(seconds % 3600 / 60)
+      let second = seconds % 60
+      this.msgTime = `${hour.toString().padStart(2,0)}: ${min.toString().padStart(2,0)}: ${second.toString().padStart(2,0)}`
+      this.countdown = setInterval(() => {
+        // 不断的刷新秒时(因为下一个0时与现在的时间是不一样的)
+        seconds = moment(newDate + ' 00:00:00').diff(moment(), 'second')
+        let hour = Math.floor(seconds / 3600)
+        let min = Math.floor(seconds % 3600 / 60)
+        let second = seconds % 60
+        this.msgTime = `${hour.toString().padStart(2,0)}: ${min.toString().padStart(2,0)}: ${second.toString().padStart(2,0)}`
+        if(seconds <= 0){
+          clearInterval(this.countdown)
+          this.isSign = false
+          let user = this.$store.state.userInfo
+          user.isSign = false
+          this.$store.commit('setUserInfo', user)
+        }
+      }, 1000)
+
     },
     sign(){
       if(!this.isLogin){

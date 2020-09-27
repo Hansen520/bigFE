@@ -8,7 +8,7 @@ import config from '../config'
 import { checkCode, getJWTPayload } from '../common/Utils'
 import User from '../model/User'
 import signRecord from '../model/SignRecord'
-import uuid from 'uuid/dist/v4'
+import { v4 as uuidv4 } from 'uuid'
 import { setValue, getValue } from '../config/RedisConfig'
 
 class LoginController {
@@ -27,7 +27,7 @@ class LoginController {
       return
     }
     try {
-      const key = uuid()
+      const key = uuidv4()
       // 通过忘记密码设置key，然后传递到发送邮箱的方式放到async reset()里面
       setValue(
         key,

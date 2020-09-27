@@ -23,7 +23,7 @@ export default {
       lists: [{
         name: '我的主页',
         icon: 'layui-icon-home',
-        link: 'home'
+        link: 'index'
       },
       {
         name: '用户中心',

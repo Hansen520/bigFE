@@ -3,10 +3,11 @@ import { getJWTPayload } from '../common/Utils'
 import User from '../model/User'
 import moment from 'dayjs'
 import send from '../config/MailConfig'
-import uuid from 'uuid/dist/v4'
+import { v4 as uuidv4 } from 'uuid'
 import jwt from 'jsonwebtoken'
 import { getValue, setValue } from '../config/RedisConfig'
 import config from '../config/index'
+import bcrypt from 'bcrypt'
 
 class UserController {
   // 用户签到接口
@@ -138,7 +139,7 @@ class UserController {
         }
         return
       }
-      const key = uuid()
+      const key = uuidv4()
       setValue(
         key,
         jwt.sign({ _id: obj._id }, config.JWT_SECRET, {
@@ -187,6 +188,30 @@ class UserController {
       ctx.body = {
         code: 200,
         msg: '更新用户名成功'
+      }
+    }
+  }
+  // 修改密码接口
+  async changePasswd (ctx) {
+    const { body } = ctx.request
+    console.log(body)
+    const obj = await getJWTPayload(ctx.header.authorization)
+    const user = await User.findOne({ _id: obj._id })
+    console.log(await bcrypt.compare(body.oldpwd, user.password))
+    // 密码比对是否相同
+    if (await bcrypt.compare(body.oldpwd, user.password)){
+      // 加密新密码
+      const newpasswd = await bcrypt.hash(body.newpwd, 5)
+      console.log(newpasswd)
+      await User.updateOne({_id: obj._id}, { $set: { password: newpasswd } })
+      ctx.body = {
+        code: 200,
+        msg: '更新密码成功'
+      }
+    } else {
+      ctx.body = {
+        code: 500,
+        msg: '密码更新不成功, 你忘记原来的密码了么? ~'
       }
     }
   }

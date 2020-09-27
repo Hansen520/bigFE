@@ -9,5 +9,5 @@ const devConfig = {
   }
 }
 
-const webpackConfig = webpackMerge(baseWebpackConfig, devConfig);
+const webpackConfig = webpackMerge.merge(baseWebpackConfig, devConfig);
 module.exports = webpackConfig;

@@ -42,5 +42,5 @@ const prodConfig = {
   },
 }
 
-const webpackConfig = webpackMerge(baseWebpackConfig, prodConfig);
+const webpackConfig = webpackMerge.merge(baseWebpackConfig, prodConfig);
 module.exports = webpackConfig;
