@@ -89,6 +89,8 @@ i{font-style: normal;}
 .icon-pinglun2:before{content:"\e62c"}
 .icon-jiaoliu:before{content:"\e6b7"}
 .icon-renzheng:before{content:"\e62e"}
+.icon-yinhao:before{content:"”"; padding-top: 30px;}
+.icon-hr:before{content:"hr";}
 
 
 /* 辅助 */

@@ -16,7 +16,7 @@
                 <form method="post">
                   <div class="layui-form-item">
                     <label for="L_username" class="layui-form-label">用户名</label>
-                    <validation-provider rules="required|email" name="email" v-slot="{ errors }">
+                    <validation-provider ref="codefield" rules="required|email" name="email" v-slot="{ errors }">
                       <div class="layui-input-inline">
                         <input
                           type="text"
@@ -53,7 +53,7 @@
                   </div>
                   <div class="layui-form-item">
                     <label for="L_vercode" class="layui-form-label">验证码</label>
-                    <validation-provider name="code" ref="codefield" rules="required|length:4" v-slot="{ errors }">
+                    <validation-provider name="code" rules="required|length:4" v-slot="{ errors }">
                       <div class="layui-input-inline">
                         <input
                           type="text"

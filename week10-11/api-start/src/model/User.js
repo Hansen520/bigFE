@@ -3,6 +3,7 @@ import moment from 'dayjs'
 
 const Schema = mongoose.Schema
 const UserSchema = new Schema({
+// uid为自身产生的obj._id
 // sparse就是有username才会去检索,index代表数据唯一性
 username: {type: String, index: { unique: true }, sparse: true},
 password: {type: String},

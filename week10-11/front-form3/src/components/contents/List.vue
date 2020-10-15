@@ -37,14 +37,13 @@ export default {
       tag: '',
       sort: 'created',
       page: 0,
-      limit: 20,
+      limit: 4,
       catalog: '',
       lists: []
     }
   },
   mounted () {
     let catalog = this.$route.params['catalog']
-    // console.log(catalog)
     if (typeof catalog !== 'undefined' && catalog !== '') {
       this.catalog = catalog
     }
@@ -82,10 +81,11 @@ export default {
       this.isRepeat = true
       let options = {
         catalog: this.catalog,
-        isTop: 0,
+        isTop: this.isTop,
         limit: this.limit,
         sort: this.sort,
         tag: this.tag,
+        page: this.page,
         status: this.status
       }
       getList(options).then((res) => {
@@ -107,6 +107,7 @@ export default {
             this.lists = this.lists.concat(res.data)
           }
         }
+        
       }).catch((err) => {
         this.isRepeat = false
         if (err) {
@@ -115,6 +116,7 @@ export default {
       })
     },
     nextPage(){
+      // page++也是用作后台的skip+limit
       this.page ++;
       this._getLists();
     },

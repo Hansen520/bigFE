@@ -19,10 +19,10 @@ const PostSchema = new Schema({
   tags:	{
     type: Array,
     default: [
-      {
-        name: '',
-        class: ''
-      }
+      // {
+      //   name: '',
+      //   class: ''
+      // }
     ]
   },
 })
@@ -48,11 +48,7 @@ PostSchema.statics = {
    */
   getList: function(options, sort, page, limit) {
     // populate是联合查询，只筛选出uid和name，这样子可以避免出现password等敏感信息
-    return this.find(options)
-    .sort({ [sort]: -1 })
-    .skip(page * limit)
-    .limit(limit)
-    .populate({
+    return this.find(options).skip(page * limit).limit(limit).sort({ [sort]: -1 }).populate({
       path: 'uid',
       select: 'name isVip pic'
     })
@@ -69,6 +65,22 @@ PostSchema.statics = {
       title: 1
       // 排序然后限制15条
     }).sort({ answer: -1 }).limit(15)
+  },
+  // 通过文章id，将uid字段再加一层字典(通过populate的方式)
+  findByTid: function(id){
+    return this.findOne({ _id: id }).populate({
+      path: 'uid',
+      select: 'name pic isVip _id'
+    })
+  },
+  // 通过用户id获取用户发帖列表
+  getListByUid: function(id, page, limit){
+    // 以时间倒序
+    return this.find({uid: id}).skip(page*limit).limit(limit).sort({ created: -1 })
+  },
+  // 获取用户帖子的总数
+  countByUid: function(id){
+    return this.find({uid: id}).countDocuments()
   }
 }
 

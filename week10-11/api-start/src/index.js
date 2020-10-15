@@ -38,7 +38,8 @@ const middleware = compose([
       console.log(err)
     }
   }),
-  statics(path.join(__dirname, '../assets')),
+  // 定义静态
+  statics(path.join(__dirname, '../public')),
   cors(),
   helmet(),
   jwt,

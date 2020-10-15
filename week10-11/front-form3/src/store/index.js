@@ -28,7 +28,12 @@ export default new Vuex.Store({
     // 设置isLogin的状态
     setIsLogin(state, value) {
       state.isLogin = value
-    }
+    },
+    
+  },
+  // 获取用户id
+  getters: {
+    uid: (state) => state.userInfo ? state.userInfo._id : ''
   },
   actions: {
   },

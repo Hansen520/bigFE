@@ -11,17 +11,18 @@
             <span class="layui-badge-dot" v-if="item.isNew"></span>
           </router-link>
        
-         
           <li><span class="line layui-hide-xs"></span></li>
           <!-- 用户登入后显示 -->
           <template v-if="isLogin">
-            <li class="layui-hide-xs layui-hide-sm"><a href="">我发表的贴</a></li>
+            <li class="layui-hide-xs layui-hide-sm">
+              <a>我发表的贴</a>
+            </li>
             <li class="layui-hide-xs layui-hide-sm"><a href="">我收藏的帖</a></li>
           </template>
         </ul>
         <div class="right layui-hide-xs">
           <span class="layui-icon layui-icon-search"></span>
-          <a href="" class="layui-btn">发表新帖</a>
+          <router-link :to="{'name': 'add'}" class="layui-btn">发表新帖</router-link>
         </div>
       </div>
     </div>

@@ -5,7 +5,7 @@
                 <p>建议尺寸168*168，支持jpg、png、gif，最大不能超过50KB</p>
                 <label for="pic" class="layui-btn upload-img">
                   <i class="layui-icon">&#xe67c;</i>上传头像
-                  <input id="pic" type="file" name="file" accept="image/png, image/gif, image/jpg" @change="upload">
+                  <input id="pic" type="file" name="file" accept="image/gif, image/png, image/jpg, image/jpeg" @change="upload">
                 </label>
                 <img :src="pic">
                 <span class="loading"></span>

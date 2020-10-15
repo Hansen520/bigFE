@@ -33,10 +33,27 @@ const getLinks = () => {
 */
 const uploadImg = (formData) => axios.post('/content/upload', formData)
 
+/**
+ * 发帖接口
+*/
+const addPost = (data) => axios.post('/content/add', { ...data })
+
+/**
+ * 获取文章详情
+*/
+const getDetail = (tid) => axios.get('/public/content/detail?tid='+tid)
+
+/**
+ * 编辑帖子,更新文章
+ * */
+const updatePost = (data) => axios.post('/content/update', { ...data })
 export {
   getList,
   getTips,
   getTop,
   getLinks,
-  uploadImg
+  uploadImg,
+  addPost,
+  getDetail,
+  updatePost
 }

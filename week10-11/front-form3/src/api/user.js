@@ -14,10 +14,31 @@ const updateUsername = (data) => axios.get('/public/reset-email?' + qs.stringify
 const changePasswd = (data) => axios.post('/user/changePassword', {
   ...data
 })
+// 设置收藏 & 取消收藏
+const addCollect = (data) => axios.get('/user/setCollect?' + qs.stringify(data))
+// 获取发表的文章列表
+const getPostListByUid = (data) => axios.get('/user/post?' + qs.stringify(data))
+// 删除指定文章列表
+const deletePostByUid = (data) => axios.get('/user/deletePost?' + qs.stringify(data))
+// 获取收藏列表
+const getCollect = (data) => axios.get('/user/collect?' + qs.stringify(data))
+// 获取用户的基本信息
+const getInfo = (data) => axios.get('/public/info?' + qs.stringify(data))
+// 获取用户最近的发表文章列表
+const getPostPublic = (data) => axios.get('/public/latestPost?' + qs.stringify(data))
 
+// 获取用户最近评论列表
+const getCommentList = (data) => axios.get('/public/latestComment?' + qs.stringify(data))
 export {
   userSign,
   updateUserInfo,
   updateUsername,
-  changePasswd
+  changePasswd,
+  addCollect,
+  getPostListByUid,
+  deletePostByUid,
+  getCollect,
+  getInfo,
+  getPostPublic,
+  getCommentList
 }

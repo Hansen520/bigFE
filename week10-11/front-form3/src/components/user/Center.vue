@@ -5,9 +5,9 @@
       <div class="layui-col-md6">
         <div class="panel border">
           <div class="title">我的会员信息</div>
-          <div class="content">
-            <p>你的积分有: 60</p>
-            <p>您当前为: 非VIP</p>
+          <div class="content fly-signin">
+            <p>你的积分有: {{userInfo.favs}}</p>
+            <p>您当前为: {{userInfo.isVip === '0'? '非VIP' : 'VIP' + userInfo.isVip }}</p>
           </div>
         </div>
       </div>
@@ -19,49 +19,19 @@
           <div class="title">快捷方式</div>
           <div class="content" style="height: auto;">
             <ul class="layui-row layui-col-space10">
-              <li class="layui-col-sm3 layui-col-xs4">
-                <a href="">
-                  <div class="layui-icon layui-icon-set shortcut">
-                    <span>修改密码</span>
+              <li
+                class="layui-col-sm3 layui-col-xs4"
+                v-for="(item, index) in lists"
+                :key="'user-center' + index"
+              >
+                <router-link :to="{name: item.route}">
+                  <div
+                    class="layui-icon layui-icon-set shortcut"
+                    :class="item.icon"
+                  >
+                    <span>{{item.name}}</span>
                   </div>
-                </a>
-              </li>
-              <li class="layui-col-sm3 layui-col-xs4">
-                <a href>
-                  <div class="layui-icon layui-icon-set shortcut">
-                    <span>修改密码</span>
-                  </div>
-                </a>
-              </li><li class="layui-col-sm3 layui-col-xs4">
-                <a href>
-                  <div class="layui-icon layui-icon-set shortcut">
-                    <span>修改密码</span>
-                  </div>
-                </a>
-              </li><li class="layui-col-sm3 layui-col-xs4">
-                <a href="">
-                  <div class="layui-icon layui-icon-set shortcut">
-                    <span>修改密码</span>
-                  </div>
-                </a>
-              </li><li class="layui-col-sm3 layui-col-xs4">
-                <a href="">
-                  <div class="layui-icon layui-icon-set shortcut">
-                    <span>修改密码</span>
-                  </div>
-                </a>
-              </li><li class="layui-col-sm3 layui-col-xs4">
-                <a href="">
-                  <div class="layui-icon layui-icon-set shortcut">
-                    <span>修改密码</span>
-                  </div>
-                </a>
-              </li><li class="layui-col-sm3 layui-col-xs4">
-                <a href="">
-                  <div class="layui-icon layui-icon-set shortcut">
-                    <span>修改密码</span>
-                  </div>
-                </a>
+                </router-link>
               </li>
             </ul>
           </div>
@@ -72,11 +42,96 @@
 </template>
 
 <script>
+import { getInfo } from '@/api/user'
 import Sign from '@/components/sidebar/Sign.vue'
 export default {
   name: 'user-center',
   components: {
     Sign
+  },
+  data () {
+    return {
+      lists: [
+        {
+          name: '修改信息',
+          route: 'info',
+          icon: 'layui-icon-set'
+        },
+        {
+          name: '修改头像',
+          route: 'pic',
+          icon: 'layui-icon-face-smile'
+        },
+        {
+          name: '修改密码',
+          route: 'passwd',
+          icon: 'layui-icon-password'
+        },
+        {
+          name: '账号绑定',
+          route: 'account',
+          icon: 'layui-icon-app'
+        },
+        {
+          name: '发表新贴',
+          route: '',
+          icon: 'layui-icon-add-circle'
+        },
+        {
+          name: '查看分享',
+          route: '',
+          icon: 'layui-icon-share'
+        },
+        {
+          name: '我的帖子',
+          route: 'mypost',
+          icon: 'layui-icon-username'
+        },
+        {
+          name: '我的收藏',
+          route: 'mycollection',
+          icon: 'layui-icon-rate-solid'
+        },
+        {
+          name: '其他资料',
+          route: '',
+          icon: 'layui-icon-template-1'
+        },
+        {
+          name: '关注公众号',
+          route: '',
+          icon: 'layui-icon-login-wechat'
+        },
+        {
+          name: '文档',
+          route: '',
+          icon: 'layui-icon-read'
+        },
+        {
+          name: '后台管理',
+          route: '',
+          icon: 'layui-icon-user'
+        }
+      ]
+    }
+  },
+  computed: {
+    userInfo () {
+      return this.$store.state.userInfo
+    }
+  },
+  mounted () {
+    this.getUserInfo()
+  },
+  methods: {
+    getUserInfo(){
+      getInfo({uid: this.userInfo._id}).then(res => {
+        if(res.code === 200){
+          // 数据库查询的信息是实时的(像vuex提交数据)
+          this.$store.commit('setUserInfo', res.data)
+        }
+      })
+    }
   }
 }
 

@@ -1,6 +1,7 @@
+/* eslint camelcase: 0 */
 // 信息定制化
 import { extend, localize } from 'vee-validate'
-import { required, email, min, max, length, confirmed } from 'vee-validate/dist/rules'
+import { required, email, min, max, length, confirmed, is_not } from 'vee-validate/dist/rules'
 
 import zh from 'vee-validate/dist/locale/zh_CN.json'
 
@@ -10,6 +11,7 @@ extend('max', max)
 extend('email', email)
 extend('length', length)
 extend('confirmed', confirmed)
+extend('is_not', is_not)
 extend('name', {
   validate: value => {
     return !(/^\d+/).test(value)
@@ -38,6 +40,10 @@ localize('zh_CN', {
   },
   // 针对不同的name，定义不同的message消息
   fields: {
+    catalog: {
+      is_not: '*请选择{_field_}'
+    },
+
     email: {
       email: '请输入正确的{_field_}！',
       required: '请输入{_field_}'

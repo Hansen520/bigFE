@@ -20,6 +20,7 @@ export default {
 
 <style lang="scss">
 @import "assets/css/global.css";
+@import "assets/css/layer/layer.css";
 /* 公共样式 */
 .gray{
   color: #999;
@@ -37,20 +38,26 @@ export default {
   .pr#{$i}{
     padding-right: $i * 10 + px !important;
   }
+  .pt#{$i}{
+    padding-top: $i * 10 + px !important;
+  }
+  .pb#{Si}{
+    padding-bottom: $i * 10 + 'px' !important;
+  }
+  .mt#{$i}{
+    margin-top: $i * 10 + px !important;
+  }
   .mr#{$i}{
     margin-right: $i * 10 + px !important;
   }
-  .mt#{$i}{
-    margin-right: $i * 10 + px !important;
+  .ml#{$i}{
+    margin-left: $i * 10 + px !important;
+  }
+  .mb#{$i}{
+    margin-bottom: $i * 10 + px !important;
   }
 }
-/* .pd20{
-  padding: 20px;
-} */
 
-// .pl0{
-//   padding-left: 0;
-// }
 .orange{
   color: #ff5722;
 }
@@ -65,6 +72,25 @@ export default {
 }
 .text-right{
   text-align: right;
+}
+.d-hide {
+  position: absolute;
+  overflow: hidden;
+  height: 0;
+}
+.d-flex{
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  &.flex-start {
+    justify-content: flex-start;
+  }
+  &.flex-end {
+    justify-content: flex-end;
+  }
+  &.flex-center{
+    justify-content: center;
+  }
 }
 a{
   cursor: pointer;

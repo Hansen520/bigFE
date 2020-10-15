@@ -1,6 +1,7 @@
 import SignRecord from '../model/SignRecord'
 import { getJWTPayload } from '../common/Utils'
 import User from '../model/User'
+import UserCollect from '../model/UserCollect'
 import moment from 'dayjs'
 import send from '../config/MailConfig'
 import { v4 as uuidv4 } from 'uuid'
@@ -18,10 +19,10 @@ class UserController {
     // 查询用户上一次签到记录
     const record = await SignRecord.findByUid(obj._id)
     // 获取用户的基本信息
-    const user = await User.findById(obj._id)
+    const user = await User.findByID(obj._id)
     // console.log(moment(record.created).format('YYYY-MM-DD'))
     let newRecord = {}
-    let result
+    let result = ''
     // 判断签到逻辑
     if(record !== null){
       // 有历史的签到数据
@@ -73,10 +74,13 @@ class UserController {
         } else {
           // 用户中断了一次签到
           fav = 5
-          await User.updateOne({_id: obj._id},{
-            $set: { count: 1 },
-            $inc: { favs: fav }// 就是说又重新从5开始加
-          })
+          await User.updateOne(
+            {_id: obj._id},
+            {
+              $set: { count: 1 },
+              $inc: { favs: fav }// 就是说又重新从5开始加
+            }
+          )
           result = {
             favs: user.favs + fav,
             count: 1
@@ -109,20 +113,18 @@ class UserController {
         favs: user.favs + 5,
         count: 1
       }
-      ctx.body = {
-        code: 200,
-        msg: '签到成功',
-        ...result,
-        lastSign: newRecord.created
-      }
     }
-    
+    ctx.body = {
+      code: 200,
+      msg: '签到成功',
+      ...result,
+      lastSign: newRecord.created
+    }
   }
 
   // 更新用户基本信息接口
   async updateUserInfo(ctx){
     const { body } = ctx.request
-    console.log(body)
     const obj = await getJWTPayload(ctx.header.authorization)
     // 判断用户是否修改了邮箱
     const user = await User.findOne({_id: obj._id})
@@ -213,6 +215,84 @@ class UserController {
         code: 500,
         msg: '密码更新不成功, 你忘记原来的密码了么? ~'
       }
+    }
+  }
+  // 设置收藏
+  async setCollect(ctx){
+    const params = ctx.query
+    
+    const obj = await getJWTPayload(ctx.header.authorization)
+    if(parseInt(params.isFav)){
+      // 说明用户已经收藏了帖子
+      await UserCollect.deleteOne({ uid: obj._id, tid: params.tid })
+      ctx.body = {
+        code: 200,
+        msg: '取消收藏成功'
+      }
+    } else {
+      const newCollect = new UserCollect({
+        title: params.title,
+        uid: obj._id,
+        tid: params.tid
+        
+      })
+      // console.log(newCollect)
+      const result = await newCollect.save()
+      if(result.uid){
+        ctx.body = {
+          code: 200,
+          data: result,
+          msg: '收藏成功'
+        }
+      }
+    }
+  }
+  // 收藏的贴列表
+  async getCollectByUid(ctx){
+    const params = ctx.query
+    const obj = await getJWTPayload(ctx.header.authorization)
+    const result = await UserCollect.getListByUid(
+      obj._id,
+      params.page,
+      params.limit ? parseInt(params.limit) : 10
+    )
+    if(result.length > 0){
+      ctx.body = {
+        code: 200,
+        data: result,
+        msg: '查询收藏列表成功'
+      }
+    }else{
+      ctx.body = {
+        code: 500,
+        msg: '查询收藏列表失败'
+      }
+    }
+  }
+  // 获取用户基本信息
+  async getBasicInfo(ctx){
+    const params = ctx.query
+    const uid = params.uid || ctx._id
+    let user = await User.findByID(uid)
+    // 取得用户的签到记录 有没有 > today 0:00:00
+    if(user){
+      user = user.toJSON()
+      const data = moment().format('YYYY-MM-DD ')
+      const result = await SignRecord.findOne({
+        uid: uid,
+        created: {$gte: data+'00:00:00'}
+      })
+      // 用户签到相关
+      if(result && result.uid){
+        user.isSign = true
+      } else {
+        user.isSign = false
+      }
+    }
+    ctx.body = {
+      code: 200,
+      data: user,
+      msg: '查询用户基本信息成功！'
     }
   }
 }

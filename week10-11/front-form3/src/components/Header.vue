@@ -5,7 +5,7 @@
       <img src="../assets/logo.png" alt="layui">
     </a>
     <ul class="layui-nav fly-nav layui-hide-xs">
-      <li class="layui-nav-item layui-this">
+      <!-- <li class="layui-nav-item layui-this">
         <router-link to="/1212">登入</router-link>
       </li>
       <li class="layui-nav-item">
@@ -13,7 +13,7 @@
       </li>
       <li class="layui-nav-item">
         <router-link to="/434">结构</router-link>
-      </li>
+      </li> -->
     </ul>
 
     <ul class="layui-nav fly-nav-user">
@@ -35,12 +35,12 @@
       <!-- 登入后的状态 -->
       <template v-else>
         <li class="layui-nav-item" @mouseover="show()" @mouseleave="hide()">
-          <a class="fly-nav-avatar" href="javascript:;">
+          <router-link class="fly-nav-avatar" :to="{name: 'center'}">
             <cite class="layui-hide-xs">{{userInfo.name}}</cite>
             <!-- <i class="iconfont icon-renzheng layui-hide-xs" title="认证信息：layui 作者"></i> -->
             <i class="layui-badge fly-badge-vip layui-hide-xs" v-show="userInfo.isVip !== '0'">VIP{{userInfo.isVip}}</i>
             <img :src="userInfo.pic">
-          </a>
+          </router-link>
           <dl class="layui-nav-child layui-anim layui-anim-upbit" :class="{'layui-show': isHover}">
             <dd>
               <router-link :to="{name: 'info'}" tag="a">
@@ -48,11 +48,11 @@
               </router-link>
             </dd>
             <dd>
-              <router-link :to="{name: 'mypost'}" tag="a">
+              <router-link :to="{name: 'msg'}" tag="a">
                 <i class="iconfont icon-tongzhi" style="top: 4px;"></i>我的消息
               </router-link>
             <dd>
-              <router-link :to="{name: 'index'}"><i class="layui-icon" style="margin-left: 2px; font-size: 22px;">&#xe68e;</i>我的主页</router-link>
+              <router-link :to="{name: 'home', params: {uid: uid}}"><i class="layui-icon" style="margin-left: 2px; font-size: 22px;">&#xe68e;</i>我的主页</router-link>
             </dd>
             <hr style="margin: 5px 0;">
             <dd><a href="javscript:void(0)" @click="loginout()" style="text-align: center;">退出</a></dd>
@@ -65,12 +65,13 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 export default {
   name: 'Header',
   data () {
     return {
       isHover: false,
-      hoverCtrl: {}
+      hoverCtrl: {},
     }
   },
   computed: {
@@ -83,7 +84,8 @@ export default {
         pic: '',
         isVip: 0
       }
-    }   
+    },
+    ...mapGetters(['uid'])   
   },
   methods: {
     // 当用户鼠标移入时候显示菜单,哈哈，定时器还能这么玩

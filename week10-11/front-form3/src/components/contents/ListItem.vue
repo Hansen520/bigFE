@@ -3,19 +3,21 @@
     <ul class="fly-list">
       <li v-for="(item, index) in items" :key="'listitem' + index">
         <a href="user/home.html" class="fly-avatar">
-          <!-- <img :src="item.uid.pic" alt="贤心"> -->
+          <img :src="item.uid.pic" alt="贤心">
         </a>
         <h2>
           <a class="layui-badge">{{item.catalog}}</a>
-          <a href="jie/detail.html">{{item.title}}</a>
+          <router-link
+            :to="{name: 'detail', params: {tid: item._id}}"
+          >{{item.title}}</router-link>
         </h2>
         <div class="fly-list-info">
-          <a href="user/home.html" link>
-            <!-- <cite>{{item.uid.name}}</cite> -->
+          <a href="user/home.html">
+            <cite>{{item.uid.name}}</cite>
             <i class="iconfont icon-renzheng" title="认证信息：XXX"></i>
-            <!-- <i class="layui-badge fly-badge-vip" v-if="item.uid.isVip !== '0'">
+            <i class="layui-badge fly-badge-vip" v-if="item.uid.isVip !== '0'">
               {{'VIP' + item.uid.isVip}}
-            </i> -->
+            </i>
           </a>
           <span>{{item.created | moment}}</span>
 
@@ -28,8 +30,15 @@
             <i class="iconfont icon-pinglun1" title="回答"></i>{{item.answer}}
           </span>
         </div>
-        <div class="fly-list-badge" v-show="item.tags.length > 0">
-          <span class="layui-badge" v-for="(tag, index) in item.tags" :key="'tag' + index" :class="tag.class">{{tag.name}}</span>
+        <div class="fly-list-badge" v-show="item.tags.length > 0 && item.tags[0].name !== ''">
+          <span
+            class="layui-badge"
+            v-for="(tag, index) in item.tags"
+            :key="'tag' + index"
+            :class="tag.class"
+          >
+          {{tag.name}}
+          </span>
         </div>
       </li> 
   </ul>
@@ -93,17 +102,17 @@ export default {
       this.$emit('nextpage')
     }
   },
-  filters: {
-    moment (date) {
-      // 超过7田，显示日期
-      if(moment(date).isBefore(moment().subtract(7, 'days'))){
-        return moment(date).format('YYYY-MM-DD')
-      } else {
-        // 1小时前，xx小时前，X天前
-        return moment(date).from(moment())
-      }
-    }
-  }
+  // filters: {
+  //   moment (date) {
+  //     // 超过7田，显示日期
+  //     if(moment(date).isBefore(moment().subtract(7, 'days'))){
+  //       return moment(date).format('YYYY-MM-DD')
+  //     } else {
+  //       // 1小时前，xx小时前，X天前
+  //       return moment(date).from(moment())
+  //     }
+  //   }
+  // }
 }
 
 </script>

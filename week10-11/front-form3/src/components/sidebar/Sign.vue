@@ -40,7 +40,7 @@ export default {
       isShow: false,
       showList: false,
       current: 0,
-      isSign: false,
+      isSign: false,// false为可签
       countdown: '',// 倒计时
       msgTime: ''
     }
@@ -60,15 +60,26 @@ export default {
     }
     
     this.nextSignTime()
-    
-
-
+  },
+  watch: {
+    userInfo(newval, oldval){
+      if(newval.isSign === true){
+        this.nextSignTime()
+        this.isSign = true
+      } else {
+        this.isSign = false
+      }
+    }
   },
   computed: {
     isLogin(){
       return this.$store.state.isLogin
     },
-    
+    userInfo(){
+      if(this.$store.state.userInfo !== ''){
+        return this.$store.state.userInfo
+      }
+    },
     favs (){
       let count = parseInt(this.count)
       let result = 0

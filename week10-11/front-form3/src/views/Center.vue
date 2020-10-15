@@ -3,7 +3,7 @@
     <div class="layui-container fly-marginTop fly-user-main">
       <ul class="layui-nav layui-nav-tree" lay-filter="test">
         <li class="layui-nav-item" v-for="(item, index) in lists" :key="'center'+ index">
-          <router-link href="javascript:;" :to="{name: item.link}" :active-class="item.activeClass">
+          <router-link href="javascript:;" :to="{name: item.link, params: {uid: uid}}" :active-class="item.activeClass">
             <i class="layui-icon" :class="item.icon">
               {{item.name}}
             </i>
@@ -16,6 +16,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 export default {
   name: 'center',
   data () {
@@ -23,7 +24,7 @@ export default {
       lists: [{
         name: '我的主页',
         icon: 'layui-icon-home',
-        link: 'index'
+        link: 'home'
       },
       {
         name: '用户中心',
@@ -37,22 +38,26 @@ export default {
         activeClass: 'layui-this'
       },
       {
-        name: '我的消息',
-        icon: 'layui-icon-notice',
-        link: 'mypost',
-        activeClass: 'layui-this'
-      },
-      {
         name: '我的帖子',
         icon: 'layui-icon-form',
-        link: 'msg'
+        link: 'mypost'
       },
+      {
+        name: '我的消息',
+        icon: 'layui-icon-notice',
+        link: 'msg',
+        activeClass: 'layui-this'
+      },
+      
       {
         name: '其他消息',
         icon: 'layui-icon-list',
         link: 'others'
       }]
     }
+  },
+  computed: {
+    ...mapGetters(['uid'])
   }
 }
 
