@@ -1,6 +1,5 @@
 const WebSocket = require('ws')
 const http = require('http')
-
 // 定义全局人数量
 // let num = 0;
 // 多房间人数计数

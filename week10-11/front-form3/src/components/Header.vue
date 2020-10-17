@@ -57,7 +57,16 @@
             <hr style="margin: 5px 0;">
             <dd><a href="javscript:void(0)" @click="loginout()" style="text-align: center;">退出</a></dd>
           </dl>
-      </li>
+        </li>
+        <div class="fly-nav-msg" v-show="num.message && num.message !== 0">{{num.message}}</div>
+        <transition name="fade">
+          <div class="layui-layer-tips" v-show="hasMsg">
+            <div class="layui-layer-content">
+              您有{{num.message}}条未读消息
+              <i class="layui-layer-TipsG layui-layer-TipsB"></i>
+            </div>
+          </div>
+        </transition>
       </template>
     </ul>
   </div>
@@ -72,10 +81,26 @@ export default {
     return {
       isHover: false,
       hoverCtrl: {},
+      hasMsg: true
+    }
+  },
+  watch: {
+    // 新消息数变化
+    num(newval, oldval){
+      console.log(newval, oldval)
+      if(newval.event && newval !== oldval){
+        this.hasMsg = true
+        setTimeout(()=>{
+          this.hasMsg = false
+        }, 2000)
+      }
     }
   },
   computed: {
-     isShow(){
+    num(){
+      return this.$store.state.num
+    },
+    isShow(){
       return this.$store.state.isLogin
     },
     userInfo(){
@@ -126,5 +151,12 @@ export default {
     left: -15px !important;
     top: -10px !important;
     margin-left: 15px;
+  }
+  .layui-layer-tips {
+    position: absolute;
+    white-space: nowrap;
+    right: 0;
+    top: 60px;
+    z-index: 2000;
   }
 </style>

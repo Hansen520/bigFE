@@ -96,10 +96,17 @@ class CommentsController{
     newComment.cuid = obj._id
     // 根据帖子的id查询帖子的作者，以便发送消息
     const post = await Post.findOne({_id: body.tid})
-    // 把帖子作者的id给评论的uid
+    // 把帖子作者的id给评论的uid(同一人)
     newComment.uid = post.uid
     // 保存
     const comment = await newComment.save()
+    const num = await Comments.getTotal(post.uid)
+
+    global.ws.send(post.uid, JSON.stringify({
+      event: 'message',
+      message: num
+    }))
+    
     // 评论计数
     const updatePostresult = await Post.updateOne({_id: body.tid},{$inc: {answer:1}})
     if(comment.id && updatePostresult.ok === 1){

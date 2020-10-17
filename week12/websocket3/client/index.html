@@ -20,6 +20,7 @@
     </ul>
     <div v-if="isShow">
       用户名:<input type="text" v-model="name">
+      uid: <input type="text" v-model="uid">
       房间号:<input type="text" v-model="roomId">
       <button type="button" @click="enter()">进入聊天室</button>
     </div>
@@ -47,6 +48,7 @@
           name: '',
           // 在线人数
           num: 0,
+          uid: '',
           // 房间号
           roomId: '',
           // 重连计时器
@@ -77,17 +79,18 @@
         onOpen: function() {
           console.log('open:' + this.ws.readyState);
           // 发起鉴权请求
-          this.ws.send(JSON.stringify({
-            event: 'auth',
-            // message就是token的数据
-            message: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6Imltb29jIiwiaWF0IjoxNTE2MjM5MDIyfQ.KQv-KO2KRPtFP1Hl9h3qyxiko8Czz_7vWVm-5JcyP7k`
-          }))
+          // this.ws.send(JSON.stringify({
+          //   event: 'auth',
+          //   // message就是token的数据
+          //   message: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6Imltb29jIiwiaWF0IjoxNTE2MjM5MDIyfQ.KQv-KO2KRPtFP1Hl9h3qyxiko8Czz_7vWVm-5JcyP7k`
+          // }))
 
           // ws.send是不能发送对象的,所以要转换为字符串，这里是发送给后台房间号的请求
           this.ws.send(JSON.stringify({
             event: 'enter',
             name: this.name,
-            roomId: this.roomId
+            roomId: this.roomId,
+            uid: this.uid
           }))
         },
         onMessage: function(event) {
@@ -104,7 +107,8 @@
           }
 
           if (obj.event === 'heartbeatToClient') {
-            this.checkServer()
+            // this.checkServer()
+            // 可以注释掉以下心跳状态，主动测试服务端是否会断开客户端的连接
             this.ws.send(JSON.stringify({
               event: 'heartbeatToServer',
               message: 'pong'
@@ -138,7 +142,7 @@
         onError: function(){
           console.log('error:' + this.ws.readyState)
           console.log('websocket连接失败')
-          // 失败时候重连
+          // 失败时候1s后重连
           var _this = this
           setTimeout(function(){
             _this.init()
@@ -172,7 +176,7 @@
               _this.init()
             }, 1000)
             _this.init()
-          },500)
+          },30000+1000)
         }
       }
     })

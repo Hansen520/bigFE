@@ -2,6 +2,7 @@ import SignRecord from '../model/SignRecord'
 import { getJWTPayload } from '../common/Utils'
 import User from '../model/User'
 import UserCollect from '../model/UserCollect'
+import Comments from '../model/Comments'
 import moment from 'dayjs'
 import send from '../config/MailConfig'
 import { v4 as uuidv4 } from 'uuid'
@@ -293,6 +294,48 @@ class UserController {
       code: 200,
       data: user,
       msg: '查询用户基本信息成功！'
+    }
+  }
+  // 获取历史消息
+  // 记录评论之后，给作者发送消息
+  async getMsg(ctx){
+    const params = ctx.query
+    const page = params.page ? parseInt(params.page) : 0
+    const limit = params.limit ? parseInt(params.limit) : 0
+    const obj = await getJWTPayload(ctx.header.authorization)
+    const num = await Comments.getTotal(obj._id)
+    // 这里可以使用aggregate联合查询但是太麻烦，所以采用冗余方式
+    // getMsgList重要接口
+    const result = await Comments.getMsgList(obj._id, page, limit)
+    ctx.body = {
+      code: 200,
+      data: result,
+      total: num
+    }
+  }
+
+  // 设置已读消息
+  async setMsg(ctx){
+    const params = ctx.query
+    if (params.id){
+      // 用于删除单挑数据(设置为已阅)
+      const result = await Comments.updateOne({_id: params.id}, {isRead: '1'})
+      if(result.ok === 1){
+        ctx.body = {
+          code: 200
+        }
+      }
+    } else {
+      const obj = await getJWTPayload(ctx.header.authorization)
+      // 设置所有数据都已阅
+      const result = await Comments.updateMany({uid: obj._id}, {isRead: '1'})
+      const num = await Comments.getTotal(obj._id)
+      if(result.ok === 1){
+        ctx.body = {
+          code: 200,
+          total: num
+        }
+      }
     }
   }
 }

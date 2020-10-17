@@ -27,4 +27,10 @@ router.get('/deletePost', contentController.deletePostByUid)
 // 获取收藏列表
 router.get('/collect', userController.getCollectByUid)
 
+// 获取历史消息
+router.get('/getmsg', userController.getMsg)
+
+// 设置获取历史消息
+router.get('/setmsg', userController.setMsg)
+
 export default router

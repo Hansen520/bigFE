@@ -11,8 +11,14 @@ import config from './config/index'
 import errorHandle from './common/ErrorHandle'
 import Koa from 'koa'
 import path from 'path'
+import WebSocketServer from './config/WebSocket'
 
 const app = new Koa()
+
+const ws = new WebSocketServer()
+ws.init()
+global.ws = ws
+console.log(global.ws)
 
 // 定义公共路径，不需要jwt鉴权（比如public和login是不需鉴权的）
 const jwt = JWT({secret: config.JWT_SECRET}).unless({ path: [/^\/public/, /^\/login/] })

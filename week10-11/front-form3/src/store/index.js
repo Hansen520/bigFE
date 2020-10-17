@@ -1,5 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import WebSocketClient from '@/utils/websocket'
+
 
 Vue.use(Vuex)
 
@@ -8,9 +10,24 @@ export default new Vuex.Store({
     sid: '',
     isLogin: false,
     token: '',
-    userInfo: {}
+    userInfo: {},
+
+    isHide: false,
+    ws: null,
+    num: 0
   },
   mutations: {
+    initWebSocket (state, config){
+      state.ws = new WebSocketClient(config)
+      state.ws.init()
+    },
+    // 设置container的状态
+    setHide(state, value){
+      state.isHide = value
+    },
+    setMessage(state, value){
+      state.num = value
+    },
     setSid (state, value) {
       state.sid = value
     },
@@ -36,6 +53,9 @@ export default new Vuex.Store({
     uid: (state) => state.userInfo ? state.userInfo._id : ''
   },
   actions: {
+    message({ commit }, msg){
+      commit('setMessage', msg)
+    }
   },
   modules: {
   }

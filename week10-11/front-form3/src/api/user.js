@@ -29,6 +29,17 @@ const getPostPublic = (data) => axios.get('/public/latestPost?' + qs.stringify(d
 
 // 获取用户最近评论列表
 const getCommentList = (data) => axios.get('/public/latestComment?' + qs.stringify(data))
+
+/*
+  下面通过websocket方式的
+*/
+// 获取用户未读消息
+const getMsg = (data) => axios.get('/user/getmsg?' + qs.stringify(data))
+
+// 设置用户未读消息
+const setMsg = (data) => axios.get('/user/setmsg?' + qs.stringify(data))
+
+
 export {
   userSign,
   updateUserInfo,
@@ -40,5 +51,7 @@ export {
   getCollect,
   getInfo,
   getPostPublic,
-  getCommentList
+  getCommentList,
+  getMsg,
+  setMsg
 }

@@ -6,7 +6,7 @@ import mongoose from '../config/DBHelper'
 const Schema = mongoose.Schema
 
 const CommentsSchema = new Schema({
-  tid: { type: String, ref: 'posts' },
+  tid: { type: String, ref: 'posts' },// 帖子id
   uid: { type: String, ref: 'users' }, // 文章作者ID
   cuid: { type: String, ref: 'users' }, // 评论用户的ID
   content: { type: String },
@@ -54,6 +54,33 @@ CommentsSchema.statics = {
     .skip(page * limit)
     .limit(limit)
     .sort({created: -1})
+  },
+  // 获取消息列表(重要接口)
+  getMsgList: function(id, page, limit){
+    return this.find({
+      uid: id,
+      // $ne为不等于,就是说cuid的值不等于id才显示
+      cuid: { $ne: id },
+      // 未读状态
+      isRead: { $eq: '0' },
+      // 是否显示这条记录(只显示status=1的)
+      status: { $eq: '1' }
+    }).populate({
+      path: 'tid',
+      select: '_id title'
+    }).populate({
+      // 被传递消息者(帖子主人)
+      path: 'uid',
+      select: '_id name'
+    }).populate({
+      // 评论者
+      path: 'cuid',
+      select: '_id name'
+    }).skip(limit * page).limit(limit).sort({created: -1})
+  },
+  // 获取阅读总数
+  getTotal: function(id){
+    return this.find({uid: id, isRead: '0', status: '1'}).countDocuments()
   }
 }
 

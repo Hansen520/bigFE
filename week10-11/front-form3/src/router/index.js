@@ -207,6 +207,10 @@ router.beforeEach((to, from, next) => {
       store.commit('setToken', token)
       store.commit('setUserInfo', userInfo)
       store.commit('setIsLogin', true)// 登入
+
+      if(!store.state.ws){
+        store.commit('initWebSocket', {})
+      }
     } else {// 否则就清除本地缓存
       localStorage.clear()
     }
