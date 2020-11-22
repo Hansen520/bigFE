@@ -20,7 +20,7 @@ class WebSocketServer{
   // 初始化websocket服务
   init (){
     this.wss = new WebSocket.Server({ port: this.port, ...this.options })
-    console.log(this.wss)
+    // console.log(this.wss)
     // 心跳检测(这个不能要，要了后就不能进行下一步了)
     // this.heartbeat()
 
@@ -86,7 +86,7 @@ class WebSocketServer{
         // })
       }
     }
-    console.log(events[msgObj.event])
+    // console.log(events[msgObj.event])
     // 执行auth和heartbeat两个方法
     events[msgObj.event]()
   }
@@ -107,7 +107,7 @@ class WebSocketServer{
     })
   }
   onClose (ws){
-    console.log(ws)
+    // console.log(ws)
   }
 
   // 心跳检测

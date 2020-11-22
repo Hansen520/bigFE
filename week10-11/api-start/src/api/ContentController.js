@@ -13,11 +13,13 @@ import { checkCode, dirExists, getJWTPayload } from '../common/Utils'
 class ContentController {
   async getPostList (ctx) {
     const body = qs.parse(ctx.query)
-
+    console.log(body)
     const sort = body.sort ? body.sort : 'created'
     const page = body.page ? parseInt(body.page) : 0
     const limit = body.limit ? parseInt(body.limit) : 20
-    const options = {}
+    // 这个options是前台的查询, 如果有后台的body.option就是他，否则赋值为{}
+    const options = body.option || {}
+    // 前台相关逻辑
     if (body.title) {
       // $regex为模糊查询的字符串
       options.title = { $regex: body.title }
@@ -75,7 +77,7 @@ class ContentController {
   // 上传图片
   async uploadImg (ctx) {
     const file = ctx.request.files.file
-    console.log(file)
+    // console.log(file)
     // 图片名称、图片格式、存储的位置，返回前台可以读取的路径
     const ext = file.name.split('.').pop()
     const dir = `${config.uploadPath}/${moment().format('YYYYMMDD')}`
@@ -94,15 +96,15 @@ class ContentController {
     // 方法1
     // reader.pipe(upStream)
     // 方法2
-    let totalLength = 0
+    // let totalLength = 0
     // 流的读操作
     reader.on('data', (chunk) => {
       // 数据块的拼接
-      totalLength += chunk.length
+      // totalLength += chunk.length
       if(upStream.write(chunk) === false){
         reader.pause()
       }
-      console.log(totalLength)
+      // console.log(totalLength)
     })
 
     reader.on('drain', () => {
@@ -166,7 +168,7 @@ class ContentController {
       const obj = await getJWTPayload(ctx.header.authorization)
       // 判断帖子是否为本人
       const post = await Post.findOne({_id: body.tid})
-      console.log(post)
+      // console.log(post)
       // 判断是否为本人，判断帖子是否结贴，结了不能编辑
       if(post.uid === obj._id && post.isEnd === '0'){
         const result = await Post.updateOne({_id: body.tid}, body)
@@ -265,7 +267,7 @@ class ContentController {
       params.page,
       params.limit ? parseInt(params.limit) : 10
     )
-    console.log(result)
+    // console.log(result)
     // 获取总数
     const total = await Post.countByUid(obj._id)
     if(result.length > 0){
@@ -331,24 +333,29 @@ class ContentController {
     }
   }
   async deletePost (ctx){
-    const params = ctx.query
-    const result = await Post.deleteOne({ _id: params.tid })
-    if (result.ok === 1) {
-      ctx.body = {
-        code: 200,
-        msg: '删除成功'
-      }
-    } else {
-      ctx.body = {
-        code: 500,
-        msg: '执行删除失败！'
-      }
+    // const params = ctx.query
+    // const result = await Post.deleteOne({ _id: params.tid })
+    // if (result.ok === 1) {
+    //   ctx.body = {
+    //     code: 200,
+    //     msg: '删除成功'
+    //   }
+    // } else {
+    //   ctx.body = {
+    //     code: 500,
+    //     msg: '执行删除失败！'
+    //   }
+    // }
+    const { body } = ctx.request
+    const result = await Post.deleteMany({ _id: { $in: body.ids } })
+    ctx.body = {
+      code: 200,
+      data: result,
+      msg: '删除帖子成功！'
     }
   }
   async updatePostByTid(ctx){
-    const { body } = ctx.request
-    // const id = ctx.params.id
-    // 
+    const { body } = ctx.request 
     const result = await Post.updateOne({ _id:body._id }, body)
     if(result.ok === 1){
       ctx.body = {
@@ -410,6 +417,20 @@ class ContentController {
       code: 200,
       data: result,
       msg: '更新成功'
+    }
+  }
+
+  // 更新后台用户权限批量设置
+  async updatePostBatch (ctx) {
+    // console.log(ctx)
+    const { body } = ctx.request
+    const result = await Post.updateMany(
+      { _id: { $in: body.ids } },
+      { $set: { ...body.settings } }
+    )
+    ctx.body = {
+      code: 200,
+      data: result
     }
   }
 }

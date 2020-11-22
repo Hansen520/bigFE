@@ -14,7 +14,7 @@ favs: {type: Number, default: 100},
 gender: {type: String, default: ''},
 roles: {type: Array, default: ['user']},
 pic: {type: String, default: '/img/tim0g.jpg'},
-mobile: {type: String, match: /^1[3-9(\d{9})]$/, default: ''},
+mobile: {type: String, match: /^1[3456789]\d{9}$/, default: ''},
 status: {type: String, default: '0'},
 regmark: {type: String, default: ''},
 location: {type: String, default: ''},
@@ -50,7 +50,36 @@ UserSchema.statics = {
       username: 0,
       mobile: 0
     })
-  }
+  },
+  getList: function(options, sort, page, limit) {
+    let query = {}
+    if (typeof options.search !== 'undefined') { 
+      // 如果筛选的是日期
+      if (options.item === 'created') {
+        const start = options.search[0]// 起始日期
+        const end = options.search[1]// 末尾日期
+        // &get为大于等于， &lt为小于
+        query = { created: { $gte: new Date(start), $lt: new Date(end) } }
+      } else if (options.item === 'roles') {
+        query = { roles: { $in: options.search } }
+      } else if (['name', 'username'].includes(options.item)) {
+        // 如果是用户名和用户，采用正则表达式啦选择, 也就是模糊匹配
+        query[options.item] = { $regex: new RegExp(options.search) }
+        // 关系数据库的写法 
+        // =》 { name: { $regex: /admin/ } } => mysql like %admin%
+      } else { 
+        // radio(一般情况)
+        query[options.item] = options.search
+      }
+    }
+    console.log(query)
+    // {password: 0}这样做可以屏蔽敏感信息
+    return this.find(query, { password: 0 }).skip(page * limit).limit(limit).sort({ [sort]: -1 })
+  },
+  countList: function(options) {
+    // populate是联合查询，只筛选出uid和name，这样子可以避免出现password等敏感信息
+    return this.find(options).countDocuments()
+  },
 }
 
 // 往users数据表中插入数据

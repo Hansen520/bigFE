@@ -18,7 +18,7 @@ class LoginController {
   async forget(ctx) {
     const { body } = ctx.request
     const isHasUser = await User.findOne({ username: body.username })
-    console.log(isHasUser)
+    // console.log(isHasUser)
     if(!isHasUser){
       ctx.body = {
         code: 404,
@@ -77,7 +77,8 @@ class LoginController {
       // mongoDB查询数据库
       if (checkUserPasswd) {
         const userObj = user.toJSON()
-        const arr = ['password', 'username', 'roles']
+        // const arr = ['password', 'username', 'roles']
+        const arr = ['password', 'username']
         arr.map((item)=>{
           // 删除敏感信息然后再传到前端
           delete userObj[item]
@@ -133,7 +134,7 @@ class LoginController {
       let user1 = await User.findOne({username: body.username})
       // 如果库里有username,且不为空
       if(user1 != null && typeof user1.username !== 'undefined') {
-        console.log(user1)
+        // console.log(user1)
         msg.username = ['此邮箱已经被注册啦，您可以通过邮箱找回密码！']
         check = false
       }

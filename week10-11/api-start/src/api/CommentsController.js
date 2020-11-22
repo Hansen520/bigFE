@@ -153,9 +153,9 @@ class CommentsController{
       return
     }
     // 获取用户权限
-    console.log(obj)
+    // console.log(obj)
     const params = ctx.query
-    console.log(params)
+    // console.log(params)
     const post = await Post.findOne({_id: params.tid})
     if(post.uid === obj._id && post.isEnd === '0'){
       // 说明是用户本人，且没有结帖，可以去设置isBest
@@ -216,7 +216,7 @@ class CommentsController{
       commentAuth: comment.cuid,// 被评论用户id
       uid: obj._id// 登入者id
     })
-    console.log(newHands)
+    // console.log(newHands)
     const data = await newHands.save()
     // 更新comments表中对应的记录的hands信息 +1
     const result = await Comments.updateOne({_id: params.cid}, {$inc: {hands:1}})

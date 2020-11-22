@@ -46,9 +46,32 @@ PostSchema.statics = {
    * {Num} page 分页页数
    * {Num} limit 分页条数
    */
-  getList: function(options, sort, page, limit) {
+  getList: function (options, sort, page, limit) {
+    let query = {}
+    if (typeof options.search !== 'undefined') {
+      // 如果筛选的是日期
+      if (options.item === 'created') {
+        const start = options.search[0]// 起始日期
+        const end = options.search[1]// 末尾日期
+        // &get为大于等于， &lt为小于
+        query = { created: { $gte: new Date(start), $lt: new Date(end) } }
+      } else if (options.item === 'catalog') {
+        query = { catalog: { $in: options.search } }
+      } else if (['title', 'user', 'tags'].includes(options.item)) {
+        // 如果是用户名和用户，采用正则表达式啦选择, 也就是模糊匹配
+        query[options.item] = { $regex: new RegExp(options.search) }
+        // 关系数据库的写法 
+        // =》 { name: { $regex: /admin/ } } => mysql like %admin%
+      } else {
+        // radio(一般情况)
+        query[options.item] = options.search
+      }
+    } else {
+      // 前端页面一般情况
+      query = options
+    }
     // populate是联合查询，只筛选出uid和name，这样子可以避免出现password等敏感信息
-    return this.find(options).skip(page * limit).limit(limit).sort({ [sort]: -1 }).populate({
+    return this.find(query).skip(page * limit).limit(limit).sort({ [sort]: -1 }).populate({
       path: 'uid',
       select: 'name isVip pic'
     })
@@ -89,5 +112,4 @@ PostSchema.statics = {
 
 // 往post数据表中插入数据
 const PostModel = mongoose.model('posts', PostSchema)
-console.log(PostModel)
 export default PostModel
