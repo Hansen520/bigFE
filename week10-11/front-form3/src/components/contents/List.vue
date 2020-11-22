@@ -107,7 +107,7 @@ export default {
             this.lists = this.lists.concat(res.data)
           }
         }
-        
+
       }).catch((err) => {
         this.isRepeat = false
         if (err) {
@@ -148,7 +148,7 @@ export default {
         // 按照评论数去查询
         case 4:
           this.sort = 'answer'
-          break; 
+          break;
         // 综合查询
         default:
           this.status = ''

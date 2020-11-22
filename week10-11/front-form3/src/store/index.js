@@ -11,7 +11,6 @@ export default new Vuex.Store({
     isLogin: false,
     token: '',
     userInfo: {},
-
     isHide: false,
     ws: null,
     num: 0
@@ -46,7 +45,7 @@ export default new Vuex.Store({
     setIsLogin(state, value) {
       state.isLogin = value
     },
-    
+
   },
   // 获取用户id
   getters: {

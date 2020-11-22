@@ -20,7 +20,6 @@
             </i>
           </a>
           <span>{{item.created | moment}}</span>
-
           <span class="fly-list-kiss layui-hide-xs" title="悬赏飞吻">
             <i class="iconfont icon-kiss"></i>
             {{item.fav}}
@@ -40,7 +39,7 @@
           {{tag.name}}
           </span>
         </div>
-      </li> 
+      </li>
   </ul>
   <div style="text-align: center" v-show="isShow">
     <div class="laypage-main" v-if="!isEnd">
@@ -94,6 +93,7 @@ export default {
             break
         }
       })
+      // console.log(this.items)
       return this.lists
     }
   },

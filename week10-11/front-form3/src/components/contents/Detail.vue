@@ -6,7 +6,7 @@
       <div class="fly-panel detail-box">
         <h1>{{page.title}}</h1>
         <div class="fly-detail-info">
-    
+
         <span
           class="layui-badge layui-bg-green fly-detail-column"
           v-if="page.catalog === 'share'"
@@ -40,29 +40,30 @@
             v-for="(tag,index) in page.tags"
             :key="'tags' + index"
           >{{tag.name}}</span>
+          <div v-hasRole="'admin'">
+            <div class="fly-admin-box" data-id="123">
+              <span
+                    v-hasPermission="['get','delete']"
+                    class="layui-btn layui-btn-xs jie-admin"
+                    type="del"
+                  >删除</span>
 
-          <div class="fly-admin-box" data-id="123">
-            <span
-      
-                  class="layui-btn layui-btn-xs jie-admin"
-                  type="del"
-                >删除</span>
-
-                <span
-                  class="layui-btn layui-btn-xs jie-admin"
-                  type="set"
-                  field="stick"
-                  rank="1"
-                  v-if="page.isTop === '0'"
-                >置顶</span>
-                <span
-                  class="layui-btn layui-btn-xs jie-admin"
-                  type="set"
-                  field="stick"
-                  rank="0"
-                  style="background-color:#ccc;"
-                  v-else
-                >取消置顶</span>
+                  <span
+                    class="layui-btn layui-btn-xs jie-admin"
+                    type="set"
+                    field="stick"
+                    rank="1"
+                    v-if="page.isTop === '0'"
+                  >置顶</span>
+                  <span
+                    class="layui-btn layui-btn-xs jie-admin"
+                    type="set"
+                    field="stick"
+                    rank="0"
+                    style="background-color:#ccc;"
+                    v-else
+                  >取消置顶</span>
+            </div>
           </div>
           <span class="fly-list-nums">
             <a href="#comment"><i class="iconfont" title="评论数">&#xe60c;</i>{{page.answer}}</a>
@@ -89,7 +90,7 @@
             <span style="padding-right: 10px; color: #FF7200">悬赏：{{page.fav}}</span>
           </div>
         </div>
-        
+
         <div class="layui-btn-container fly-detail-admin pt1">
           <router-link
             class="layui-btn layui-btn-sm jie-admin"
@@ -381,7 +382,7 @@ export default {
         }
       })
     },
-    
+
     // 本人编辑评论
     editComment(item){
       this.editInfo.content = item.content

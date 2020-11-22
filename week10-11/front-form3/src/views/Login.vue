@@ -86,7 +86,7 @@
                 </form>
               </div>
             </div>
-          </validation-observer>  
+          </validation-observer>
         </div>
       </div>
     </div>
@@ -149,8 +149,8 @@ export default {
       }).then((res)=>{
         if(res.code === 200) {
           // 存储用户的登入名以备后续更改
+          console.log(res)
           res.data.username = this.username
-          console.log(this.username)
           this.$store.commit('setUserInfo', res.data)
           this.$store.commit('setIsLogin', true)
           this.$store.commit('setToken', res.token)
@@ -158,7 +158,7 @@ export default {
           this.password = ''
           this.code = ''
           requestAnimationFrame(() => {
-            
+
           })
           // 清空表单
             this.$refs.observer.reset() // 整个表单进行重置的操作

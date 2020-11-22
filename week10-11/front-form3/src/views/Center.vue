@@ -48,7 +48,7 @@ export default {
         link: 'msg',
         activeClass: 'layui-this'
       },
-      
+
       {
         name: '其他消息',
         icon: 'layui-icon-list',
