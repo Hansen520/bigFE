@@ -1,18 +1,33 @@
 <template>
   <div>
     <div v-if="searchable && searchPlace === 'top'" class="search-con search-con-top">
-      <Select v-model="searchKey" class="search-col">
-        <Option
-          v-for="item in columns"
-          v-if="item.key !== 'handle'"
-          :value="item.key" :key="`search-col-${item.key}`">
-          <template v-if="item.key !== 'handle'">
-            {{ item.title }}
-          </template>
-        </Option>
+      <Select
+        v-model="searchKey"
+        class="search-col"
+        @on-select="handleSelect"
+      >
+        <!-- 选项 -->
+        <template  v-for="(item, index) in columns">
+          <!-- item.hidden为不显示这一项，但是索引值还是在的 -->
+          <Option
+            v-if="!item.hidden"
+            :value="index"
+            :key="`search-col-${item.key}`"
+          >
+          {{ item.title }}
+          </Option>
+        </template>
       </Select>
-      <Input @on-change="handleClear" clearable placeholder="输入关键字搜索" class="search-input" v-model="searchValue"/>
-      <Button @click="handleSearch" class="search-btn" type="primary"><Icon type="search"/>&nbsp;&nbsp;搜索</Button>
+      <!-- <Input @on-change="handleClear" clearable placeholder="输入关键字搜索" class="search-input" v-model="searchValue"/> -->
+      <!-- 这里是根据上边选项的变化而变化的 -->
+      <Search
+        :item="chooseItem"
+        @changeEvent="handleSearchInput"
+      ></Search>
+      <Button @click="handleSearch" class="search-btn" type="primary">
+        <Icon type="my-search"/>&nbsp;&nbsp;搜索
+      </Button>
+      <slot name="table-header"></slot>
     </div>
     <Table
       ref="tablesMain"
@@ -55,13 +70,13 @@
         <Icon type="md-trash" size="22" @click.stop="removeRow(row, index)"></Icon>
       </template>
     </Table>
-    <div v-if="searchable && searchPlace === 'bottom'" class="search-con search-con-top">
+    <!-- <div v-if="searchable && searchPlace === 'bottom'" class="search-con search-con-top">
       <Select v-model="searchKey" class="search-col">
         <Option v-for="item in columns" v-if="item.key !== 'handle'" :value="item.key" :key="`search-col-${item.key}`">{{ item.title }}</Option>
       </Select>
       <Input placeholder="输入关键字搜索" class="search-input" v-model="searchValue"/>
       <Button class="search-btn" type="primary"><Icon type="search"/>&nbsp;&nbsp;搜索</Button>
-    </div>
+    </div> -->
     <a id="hrefToExportTable" style="display: none;width: 0px;height: 0px;"></a>
   </div>
 </template>
@@ -69,9 +84,13 @@
 <script>
 import TablesEdit from './edit.vue'
 import handleBtns from './handle-btns'
+import Search from './search'
 import './index.less'
 export default {
   name: 'Tables',
+  components: {
+    Search
+  },
   props: {
     value: {
       type: Array,
@@ -160,6 +179,9 @@ export default {
    */
   data () {
     return {
+      chooseItem: {
+        type: 'input'
+      },
       insideColumns: [],
       insideTableData: [],
       edittingCellId: '',
@@ -169,6 +191,31 @@ export default {
     }
   },
   methods: {
+    // 点击搜索时候传出去的值
+    handleSearch () {
+      this.$emit('searchEvent', {
+        item: this.columns[this.searchKey].key,
+        search: this.searchValue
+      })
+    },
+    // 需要搜索的值
+    handleSearchInput (item) {
+      // console.log(item)
+      if (this.chooseItem.type === 'input') {
+        // 取得要的input值
+        this.searchValue = item.target.value
+      } else {
+        this.searchValue = item
+      }
+    },
+    // 选中后index的值然後進行切換
+    handleSelect (index) {
+      const idx = index.value
+      // console.log('索引值'+idx)
+      // 保留思考
+      this.chooseItem = this.columns[idx].search
+      // console.log(this.chooseItem)
+    },
     suportEdit (item, index) {
       item.render = (h, params) => {
         return h(TablesEdit, {
@@ -223,14 +270,12 @@ export default {
       })
     },
     setDefaultSearchKey () {
-      this.searchKey = this.columns[0].key !== 'handle' ? this.columns[0].key : (this.columns.length > 1 ? this.columns[1].key : '')
+      this.searchKey = this.columns[0].key !== 'handle' ? this.columns[0].key : (this.columns.length > 1 ? this.columns[0].key : '')
     },
     handleClear (e) {
       if (e.target.value === '') this.insideTableData = this.value
     },
-    handleSearch () {
-      this.insideTableData = this.value.filter(item => item[this.searchKey].indexOf(this.searchValue) > -1)
-    },
+
     handleTableData () {
       this.insideTableData = this.value.map((item, index) => {
         let res = item
@@ -289,7 +334,7 @@ export default {
     },
     value (val) {
       this.handleTableData()
-      if (this.searchable) this.handleSearch()
+      // if (this.searchable) this.handleSearch()
     }
   },
   mounted () {

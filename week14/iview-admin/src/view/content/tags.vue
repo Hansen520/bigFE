@@ -8,7 +8,12 @@
         @on-row-edit="handleRowEdit"
         @on-row-remove="handleRowRemove"
       />
-      <Row type="flex" justify="space-between" align="middle" style="margin-top:10px">
+      <Row
+        type="flex"
+        justify="space-between"
+        align="middle"
+        style="margin-top: 10px"
+      >
         <Button type="primary" @click="addTag()">新建标签</Button>
         <Page
           :total="total"
@@ -43,7 +48,7 @@ export default {
     Tables,
     AddModel
   },
-  data () {
+  data() {
     return {
       page: 1,
       limit: 10,
@@ -83,16 +88,16 @@ export default {
     }
   },
   methods: {
-    addTag () {
+    addTag() {
       this.isEdit = false
       this.isShow = true
     },
-    handleChangeEvent (value) {
+    handleChangeEvent(value) {
       this.currentItem = {}
       this.isEdit = false
       this.isShow = value
     },
-    handleItemAdd (item) {
+    handleItemAdd(item) {
       if (!this.isEdit) {
         addTag(item).then((res) => {
           if (res.code === 200) {
@@ -116,21 +121,21 @@ export default {
       this.isEdit = false
       this.isShow = false
     },
-    onPageChange (page) {
+    onPageChange(page) {
       this.page = page
       this._getTags()
     },
-    onPageSizeChange (size) {
+    onPageSizeChange(size) {
       this.limit = size
       this._getTags()
     },
-    handleRowEdit (row, index) {
+    handleRowEdit(row, index) {
       this.isShow = true
       this.isEdit = true
       this.currentIndex = index
       this.currentItem = { ...row }
     },
-    handleRowRemove (row, index) {
+    handleRowRemove(row, index) {
       this.$Modal.confirm({
         title: '确定删除吗？',
         content: `删除标签"${row.tagName}"吗`,
@@ -153,7 +158,7 @@ export default {
         }
       })
     },
-    _getTags () {
+    _getTags() {
       getTags({ page: this.page - 1, limit: this.limit }).then((res) => {
         // 方法一： -> 修改getList接口
         // const data = res.data
@@ -169,11 +174,10 @@ export default {
       })
     }
   },
-  mounted () {
+  mounted() {
     this._getTags()
   }
 }
 </script>
 
-<style>
-</style>
+<style></style>

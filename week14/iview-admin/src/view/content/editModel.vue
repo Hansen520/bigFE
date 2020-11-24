@@ -1,8 +1,19 @@
 <template>
   <div>
-    <Modal v-model="showStatus" title="编辑文章属性" @on-ok="ok" @on-cancel="cancel">
-      <Form :model="localItem" :label-width="80">
-        <FormItem label="标题">
+    <Modal
+      v-model="showStatus"
+      title="编辑文章属性"
+      @on-ok="ok"
+      @on-cancel="cancel"
+      :loading="loading"
+    >
+      <Form
+        :model="localItem"
+        :label-width="80"
+        :rules="ruleValidate"
+        ref="table"
+      >
+        <FormItem label="标题" prop="title">
           <Input v-model="localItem.title" placeholder="请输入文章标题"></Input>
         </FormItem>
         <FormItem label="分类">
@@ -64,11 +75,12 @@ export default {
       default: () => {}
     }
   },
-  data () {
+  data() {
     return {
       // 是否显示模态框，因为和上面isShow重了，所以必需得改
       // showModel: false,
       showStatus: false,
+      loading: true,
       // 标签列表
       tagsList: [],
       localItem: {
@@ -86,51 +98,77 @@ export default {
         isTop: '0',
         sort: 'created',
         tags: []
+      },
+      ruleValidate: {
+        title: [
+          {
+            required: true,
+            message: '请输入标题',
+            trigger: 'blur'
+          },
+          {
+            type: 'string',
+            max: 30,
+            message: '标题长度不可超过30个字',
+            trigger: 'change'
+          }
+        ]
       }
     }
   },
   watch: {
-    item (newval, oldval) {
+    item(newval, oldval) {
       this.localItem = newval
     },
-    isShow () {
+    isShow() {
       this.showStatus = this.isShow
     }
   },
   computed: {
     formatFav: {
-      get () {
+      get() {
         return parseInt(this.localItem.fav)
       },
-      set (value) {
+      set(value) {
         this.localItem.fav = value
       }
     },
     // 待会回头看后台怎么定义接口的
     formatTags: {
-      get () {
+      get() {
         return this.localItem.tags.map((o) => o.name)
       },
-      set (value) {
-        this.tagsList.filter(
-          (item) => value.indexOf(item.tagName) !== -1
-        )
+      set(value) {
+        this.tagsList.filter((item) => value.indexOf(item.tagName) !== -1)
       }
     }
   },
-  mounted () {
+  mounted() {
     this._getTags()
   },
   methods: {
-    ok () {
-      this.$emit('editEvent', this.localItem)
-      this.$Message.info('编辑成功！')
+    ok() {
+      // 数据的校验
+      this.$refs.table.validate((valid) => {
+        // 如果校验成功
+        if (valid) {
+          this.loading = false
+          this.$emit('changeEvent', false)
+          this.$emit('editEvent', this.localItem)
+          this.$Message.info('编辑成功！')
+        } else {
+          this.loading = false
+          this.$nextTick(() => (this.loading = true))
+          this.$Message.error('编辑失败,请检查！')
+        }
+      })
     },
-    cancel () {
+    cancel() {
+      this.$refs.table.resetFields()
       this.$emit('changeEvent', false)
       this.$Message.info('取消编辑！')
     },
-    _getTags () {
+    _getTags() {
       getTags().then((res) => {
         if (res.code === 200) {
           this.tagsList = res.data

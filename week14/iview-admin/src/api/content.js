@@ -1,13 +1,17 @@
 import axios from '@/libs/request'
 import qs from 'qs'
 
+// 前台获取文章列表接口
 const getList = (options) => {
   return axios.get('/public/list?' + qs.stringify(options))
 }
 
 // 删除文章
-const deletePostById = (id) => {
-  return axios.get('/content/delete?tid=' + id)
+// const deletePostById = (id) => {
+//   return axios.get('/content/delete?tid=' + id)
+// }
+const deletePostById = (ids) => {
+  return axios.post('/content/delete-post', { ids })
 }
 
 // 更新文章信息
@@ -30,6 +34,11 @@ const removeTag = (id) => {
 const updateTag = (data) => {
   return axios.post('/admin/edit-tag?', data)
 }
+// 对后台文章做批量设置
+const updatePostBatchById = (data) => {
+  return axios.post('/content/update-post-settings', data)
+}
+
 export {
   getList,
   deletePostById,
@@ -37,5 +46,6 @@ export {
   getTags,
   addTag,
   removeTag,
-  updateTag
+  updateTag,
+  updatePostBatchById
 }
