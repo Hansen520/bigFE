@@ -1,33 +1,22 @@
 <template>
   <div>
     <div v-if="searchable && searchPlace === 'top'" class="search-con search-con-top">
-      <Select
-        v-model="searchKey"
-        class="search-col"
-        @on-select="handleSelect"
-      >
+      <Select v-model="searchKey" class="search-col" @on-select="handleSelect">
         <!-- 选项 -->
-        <template  v-for="(item, index) in columns">
+        <template v-for="(item, index) in columns">
           <!-- item.hidden为不显示这一项，但是索引值还是在的 -->
-          <Option
-            v-if="!item.hidden"
-            :value="index"
-            :key="`search-col-${item.key}`"
-          >
-          {{ item.title }}
+          <Option v-if="!item.hidden" :value="index" :key="`search-col-${item.key}`">
+            {{ item.title }}
           </Option>
         </template>
       </Select>
       <!-- <Input @on-change="handleClear" clearable placeholder="输入关键字搜索" class="search-input" v-model="searchValue"/> -->
       <!-- 这里是根据上边选项的变化而变化的 -->
-      <Search
-        :item="chooseItem"
-        @changeEvent="handleSearchInput"
-      ></Search>
+      <Search :item="chooseItem" @changeEvent="handleSearchInput"></Search>
       <Button @click="handleSearch" class="search-btn" type="primary">
-        <Icon type="my-search"/>&nbsp;&nbsp;搜索
+        <Icon type="my-search" />&nbsp;&nbsp;搜索
       </Button>
-      <slot name="table-header"></slot>
+      <slot name="table-header"> </slot>
     </div>
     <Table
       ref="tablesMain"
@@ -61,12 +50,7 @@
       <slot name="loading" slot="loading"></slot>
 
       <template slot-scope="{ row, index }" slot="action">
-        <Icon
-          type="md-build"
-          size="22"
-          style="margin-right: 5px;"
-          @click.stop="editRow(row, index)"
-        ></Icon>
+        <Icon type="md-build" size="22" style="margin-right: 5px" @click.stop="editRow(row, index)"></Icon>
         <Icon type="md-trash" size="22" @click.stop="removeRow(row, index)"></Icon>
       </template>
     </Table>
@@ -77,7 +61,7 @@
       <Input placeholder="输入关键字搜索" class="search-input" v-model="searchValue"/>
       <Button class="search-btn" type="primary"><Icon type="search"/>&nbsp;&nbsp;搜索</Button>
     </div> -->
-    <a id="hrefToExportTable" style="display: none;width: 0px;height: 0px;"></a>
+    <a id="hrefToExportTable" style="display: none; width: 0px; height: 0px"></a>
   </div>
 </template>
 
@@ -94,13 +78,13 @@ export default {
   props: {
     value: {
       type: Array,
-      default () {
+      default() {
         return []
       }
     },
     columns: {
       type: Array,
-      default () {
+      default() {
         return []
       }
     },
@@ -129,7 +113,7 @@ export default {
     },
     rowClassName: {
       type: Function,
-      default () {
+      default() {
         return ''
       }
     },
@@ -177,7 +161,7 @@ export default {
    * @on-cancel-edit 返回值 {Object} 同上
    * @on-save-edit 返回值 {Object} ：除上面三个参数外，还有一个value: 修改后的数据
    */
-  data () {
+  data() {
     return {
       chooseItem: {
         type: 'input'
@@ -192,14 +176,14 @@ export default {
   },
   methods: {
     // 点击搜索时候传出去的值
-    handleSearch () {
+    handleSearch() {
       this.$emit('searchEvent', {
         item: this.columns[this.searchKey].key,
         search: this.searchValue
       })
     },
     // 需要搜索的值
-    handleSearchInput (item) {
+    handleSearchInput(item) {
       // console.log(item)
       if (this.chooseItem.type === 'input') {
         // 取得要的input值
@@ -209,14 +193,14 @@ export default {
       }
     },
     // 选中后index的值然後進行切換
-    handleSelect (index) {
+    handleSelect(index) {
       const idx = index.value
       // console.log('索引值'+idx)
       // 保留思考
       this.chooseItem = this.columns[idx].search
       // console.log(this.chooseItem)
     },
-    suportEdit (item, index) {
+    suportEdit(item, index) {
       item.render = (h, params) => {
         return h(TablesEdit, {
           props: {
@@ -226,7 +210,7 @@ export default {
             editable: this.editable
           },
           on: {
-            'input': val => {
+            input: (val) => {
               this.edittingText = val
             },
             'on-start-edit': (params) => {
@@ -248,20 +232,23 @@ export default {
       }
       return item
     },
-    surportHandle (item) {
+    surportHandle(item) {
       let options = item.options || []
       let insideBtns = []
-      options.forEach(item => {
+      options.forEach((item) => {
         if (handleBtns[item]) insideBtns.push(handleBtns[item])
       })
       let btns = item.button ? [].concat(insideBtns, item.button) : insideBtns
       item.render = (h, params) => {
         params.tableData = this.value
-        return h('div', btns.map(item => item(h, params, this)))
+        return h(
+          'div',
+          btns.map((item) => item(h, params, this))
+        )
       }
       return item
     },
-    handleColumns (columns) {
+    handleColumns(columns) {
       this.insideColumns = columns.map((item, index) => {
         let res = item
         if (res.editable) res = this.suportEdit(res, index)
@@ -269,75 +256,76 @@ export default {
         return res
       })
     },
-    setDefaultSearchKey () {
-      this.searchKey = this.columns[0].key !== 'handle' ? this.columns[0].key : (this.columns.length > 1 ? this.columns[0].key : '')
+    setDefaultSearchKey() {
+      this.searchKey =
+        this.columns[0].key !== 'handle' ? this.columns[0].key : this.columns.length > 1 ? this.columns[0].key : ''
     },
-    handleClear (e) {
+    handleClear(e) {
       if (e.target.value === '') this.insideTableData = this.value
     },
 
-    handleTableData () {
+    handleTableData() {
       this.insideTableData = this.value.map((item, index) => {
         let res = item
         res.initRowIndex = index
         return res
       })
     },
-    exportCsv (params) {
+    exportCsv(params) {
       this.$refs.tablesMain.exportCsv(params)
     },
-    clearCurrentRow () {
+    clearCurrentRow() {
       this.$refs.talbesMain.clearCurrentRow()
     },
-    onCurrentChange (currentRow, oldCurrentRow) {
+    onCurrentChange(currentRow, oldCurrentRow) {
       this.$emit('on-current-change', currentRow, oldCurrentRow)
     },
-    onSelect (selection, row) {
+    onSelect(selection, row) {
       this.$emit('on-select', selection, row)
     },
-    onSelectCancel (selection, row) {
+    onSelectCancel(selection, row) {
       this.$emit('on-select-cancel', selection, row)
     },
-    onSelectAll (selection) {
+    onSelectAll(selection) {
       this.$emit('on-select-all', selection)
     },
-    onSelectionChange (selection) {
+    onSelectionChange(selection) {
       this.$emit('on-selection-change', selection)
     },
-    onSortChange (column, key, order) {
+    onSortChange(column, key, order) {
       this.$emit('on-sort-change', column, key, order)
     },
-    onFilterChange (row) {
+    onFilterChange(row) {
       this.$emit('on-filter-change', row)
     },
-    onRowClick (row, index) {
+    onRowClick(row, index) {
       this.$emit('on-row-click', row, index)
     },
-    onRowDblclick (row, index) {
+    onRowDblclick(row, index) {
       this.$emit('on-row-dblclick', row, index)
     },
-    onExpand (row, status) {
+    onExpand(row, status) {
       this.$emit('on-expand', row, status)
     },
     // 编辑和删除
-    editRow (row, index) {
+    editRow(row, index) {
       this.$emit('on-row-edit', row, index)
     },
-    removeRow (row, index) {
+    removeRow(row, index) {
       this.$emit('on-row-remove', row, index)
     }
   },
   watch: {
-    columns (columns) {
+    columns(columns) {
       this.handleColumns(columns)
       this.setDefaultSearchKey()
     },
-    value (val) {
+    value(val) {
       this.handleTableData()
       // if (this.searchable) this.handleSearch()
     }
   },
-  mounted () {
+  mounted() {
     this.handleColumns(this.columns)
     this.setDefaultSearchKey()
     this.handleTableData()

@@ -8,13 +8,16 @@ export default [
 
   // 内容管理
   // 1. 文章管理 -> 文章内容管理, 文章标签管理(热门、精华 etc)
+  // 如果只有一个孩子，那么一级就是孩子，如果二个孩子，就会显示二级菜单
   {
     path: '/content',
     name: 'article_management',
+    //
     meta: {
       icon: 'md-albums',
       title: '文章管理'
     },
+    // 基本上都是刷新一次
     component: Main,
     children: [
       {
@@ -55,6 +58,46 @@ export default [
           title: '用户管理'
         },
         component: () => import('@/view/user/index.vue')
+      }
+    ]
+  },
+  {
+    path: '/menu',
+    name: 'menu',
+    meta: {
+      icon: 'md-settings',
+      title: '菜单管理'
+    },
+    component: Main,
+    children: [
+      {
+        path: 'index',
+        name: 'menu_management',
+        meta: {
+          icon: 'ios-menu',
+          title: '用户管理'
+        },
+        component: () => import('@/view/menu/index.vue')
+      }
+    ]
+  },
+  {
+    path: '/roles',
+    name: 'roles',
+    meta: {
+      icon: 'md-checkbox',
+      title: '权限管理'
+    },
+    component: Main,
+    children: [
+      {
+        path: 'index',
+        name: 'roles_management',
+        meta: {
+          icon: 'md-key',
+          title: '角色权限'
+        },
+        component: () => import('@/view/roles/index.vue')
       }
     ]
   }

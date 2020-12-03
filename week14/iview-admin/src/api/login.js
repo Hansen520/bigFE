@@ -31,14 +31,9 @@ const reg = (regInfo) => {
 }
 
 // 重置密码接口
-const reset = (info) => axios.post('/login/reset', {
-  ...info
-})
+const reset = (info) =>
+  axios.post('/login/reset', {
+    ...info
+  })
 
-export {
-  getCode,
-  forget,
-  login,
-  reg,
-  reset
-}
+export { getCode, forget, login, reg, reset }

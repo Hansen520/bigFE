@@ -1,6 +1,6 @@
 const path = require('path')
 
-const resolve = dir => {
+const resolve = (dir) => {
   return path.join(__dirname, dir)
 }
 
@@ -12,9 +12,7 @@ const resolve = dir => {
 // 例如：https://www.foobar.com/my-app/
 // 需要将它改为'/my-app/'
 // iview-admin线上演示打包路径： https://file.iviewui.com/admin-dist/
-const BASE_URL = process.env.NODE_ENV === 'production'
-  ? '/'
-  : '/'
+const BASE_URL = process.env.NODE_ENV === 'production' ? '/' : '/'
 
 module.exports = {
   // Project deployment base
@@ -29,10 +27,24 @@ module.exports = {
   // see https://github.com/vuejs/vue-cli/blob/dev/docs/webpack.md
   // 如果你不需要使用eslint，把lintOnSave设为false即可
   lintOnSave: true,
-  chainWebpack: config => {
+  chainWebpack: (config) => {
     config.resolve.alias
       .set('@', resolve('src')) // key,value自行定义，比如.set('@@', resolve('src/components'))
       .set('_c', resolve('src/components'))
+
+    config.module
+      .rule('vue')
+      .test(/\.vue$/)
+      .use('iview-loader')
+      .loader('iview-loader')
+      .tap((options) => {
+        return {
+          // 设为true后可以使用i-input的方式
+          prefix: true,
+          ...options
+        }
+      })
+      .end()
   },
   // 设为false打包时不生成.map文件
   productionSourceMap: false,
