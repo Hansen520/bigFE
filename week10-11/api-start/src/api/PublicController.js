@@ -2,7 +2,7 @@ import svgCaptcha from 'svg-captcha'
 import { setValue } from '../config/RedisConfig'
 
 class PublicController {
-  constructor () {}
+  constructor() {}
   async getChapcha(ctx) {
     const body = ctx.request.query
     // console.log(body)
@@ -27,4 +27,4 @@ class PublicController {
   }
 }
 
-export default new PublicController;
+export default new PublicController()

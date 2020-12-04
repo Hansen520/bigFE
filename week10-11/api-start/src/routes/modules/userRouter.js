@@ -33,5 +33,4 @@ router.get('/getmsg', userController.getMsg)
 // 设置获取历史消息
 router.get('/setmsg', userController.setMsg)
 
-
 export default router

@@ -11,7 +11,7 @@ import config from '../config'
 import { checkCode, dirExists, getJWTPayload } from '../common/Utils'
 
 class ContentController {
-  async getPostList (ctx) {
+  async getPostList(ctx) {
     const body = qs.parse(ctx.query)
     console.log(body)
     const sort = body.sort ? body.sort : 'created'
@@ -28,7 +28,7 @@ class ContentController {
     if (body.catalog && body.catalog.length > 0) {
       options.catalog = { $in: body.catalog }
     }
-    
+
     if (body.isEnd) {
       options.isEnd = body.isEnd
     }
@@ -37,7 +37,7 @@ class ContentController {
     }
     if (typeof body.tag !== 'undefined' && body.tag !== '') {
       // 筛选一个数据，因为tag为数组
-      options.tags = { $elemMatch: { name:  body.tag } }
+      options.tags = { $elemMatch: { name: body.tag } }
     }
     const result = await Post.getList(options, sort, page, limit)
     // 获取条数
@@ -48,10 +48,9 @@ class ContentController {
       total: total,
       msg: '获取文章列表成功'
     }
-  
   }
   // 查询友链
-  async getLinks(ctx){
+  async getLinks(ctx) {
     const result = await Links.find({ type: 'links' })
     ctx.body = {
       code: 200,
@@ -59,7 +58,7 @@ class ContentController {
     }
   }
   // 友情链接
-  async getTips(ctx){
+  async getTips(ctx) {
     const result = await Links.find({ type: 'tips' })
     ctx.body = {
       code: 200,
@@ -67,7 +66,7 @@ class ContentController {
     }
   }
   // 本周热议
-  async getTopWeek (ctx) {
+  async getTopWeek(ctx) {
     const result = await Post.getTopWeek()
     ctx.body = {
       code: 200,
@@ -75,7 +74,7 @@ class ContentController {
     }
   }
   // 上传图片
-  async uploadImg (ctx) {
+  async uploadImg(ctx) {
     const file = ctx.request.files.file
     // console.log(file)
     // 图片名称、图片格式、存储的位置，返回前台可以读取的路径
@@ -101,7 +100,7 @@ class ContentController {
     reader.on('data', (chunk) => {
       // 数据块的拼接
       // totalLength += chunk.length
-      if(upStream.write(chunk) === false){
+      if (upStream.write(chunk) === false) {
         reader.pause()
       }
       // console.log(totalLength)
@@ -121,18 +120,18 @@ class ContentController {
     }
   }
   // 添加新帖
-  async addPost (ctx) {
+  async addPost(ctx) {
     const { body } = ctx.request
     const sid = body.sid
     const code = body.code
     // 验证验证码的时效性、正确性
     const result = await checkCode(sid, code)
-    if(result){
+    if (result) {
       const obj = await getJWTPayload(ctx.header.authorization)
       // 判断用户的积分数是否 > fav，否则，提示用户积分不足发贴
       // 用户积分足够的时候，新建Post，减除用户对应的积分
-      const user = await User.findByID({_id: obj._id})
-      if(user.favs < body.fav){
+      const user = await User.findByID({ _id: obj._id })
+      if (user.favs < body.fav) {
         ctx.body = {
           code: 501,
           msg: '积分不足'
@@ -158,21 +157,21 @@ class ContentController {
     }
   }
   // 编辑帖子时候，更新
-  async updatePost(ctx){
+  async updatePost(ctx) {
     const { body } = ctx.request
     const sid = body.sid
     const code = body.code
     // 验证验证码的时效性、正确性
     const result = await checkCode(sid, code)
-    if(result){
+    if (result) {
       const obj = await getJWTPayload(ctx.header.authorization)
       // 判断帖子是否为本人
-      const post = await Post.findOne({_id: body.tid})
+      const post = await Post.findOne({ _id: body.tid })
       // console.log(post)
       // 判断是否为本人，判断帖子是否结贴，结了不能编辑
-      if(post.uid === obj._id && post.isEnd === '0'){
-        const result = await Post.updateOne({_id: body.tid}, body)
-        if(result.ok === 1){
+      if (post.uid === obj._id && post.isEnd === '0') {
+        const result = await Post.updateOne({ _id: body.tid }, body)
+        if (result.ok === 1) {
           ctx.body = {
             code: 200,
             data: result,
@@ -185,14 +184,13 @@ class ContentController {
             msg: '编辑帖子，更新失败'
           }
         }
-      }else{
+      } else {
         ctx.body = {
           code: 401,
           msg: '不是你的帖子,没有操作的权限'
         }
       }
-      
-    }else{
+    } else {
       // 图片验证码验证失败
       ctx.body = {
         code: 500,
@@ -201,10 +199,10 @@ class ContentController {
     }
   }
   // 获取文章详情
-  async getPostDetail(ctx){
+  async getPostDetail(ctx) {
     const params = ctx.query
     // 如果没有文章id
-    if(!params.tid){
+    if (!params.tid) {
       ctx.body = {
         code: 500,
         msg: '文章id为空'
@@ -212,7 +210,7 @@ class ContentController {
       return
     }
     const post = await Post.findByTid(params.tid)
-    if(!post){
+    if (!post) {
       ctx.body = {
         code: 200,
         data: {},
@@ -223,10 +221,7 @@ class ContentController {
     // 文章收藏标识
     let isFav = 0
     // 判断用户是否传递Authorization的数据，即是否登录
-    if (
-      typeof ctx.header.authorization !== 'undefined' &&
-      ctx.header.authorization !== ''
-    ) {
+    if (typeof ctx.header.authorization !== 'undefined' && ctx.header.authorization !== '') {
       const obj = await getJWTPayload(ctx.header.authorization)
       const userCollect = await UserCollect.findOne({
         uid: obj._id,
@@ -240,11 +235,8 @@ class ContentController {
     const newPost = post.toJSON()
     newPost.isFav = isFav
     // 更新文章阅读计数
-    const result = await Post.updateOne(
-      {_id: params.tid},
-      {$inc: {reads:1}}
-    )
-    if(post._id && result.ok === 1){
+    const result = await Post.updateOne({ _id: params.tid }, { $inc: { reads: 1 } })
+    if (post._id && result.ok === 1) {
       ctx.body = {
         code: 200,
         data: newPost,
@@ -258,19 +250,15 @@ class ContentController {
     }
   }
   // 获取用户发帖记录
-  async getPostByUid(ctx){
+  async getPostByUid(ctx) {
     const params = ctx.query
     const obj = await getJWTPayload(ctx.header.authorization)
     // 获取数据
-    const result = await Post.getListByUid(
-      obj._id,
-      params.page,
-      params.limit ? parseInt(params.limit) : 10
-    )
+    const result = await Post.getListByUid(obj._id, params.page, params.limit ? parseInt(params.limit) : 10)
     // console.log(result)
     // 获取总数
     const total = await Post.countByUid(obj._id)
-    if(result.length > 0){
+    if (result.length > 0) {
       ctx.body = {
         code: 200,
         data: result,
@@ -284,8 +272,8 @@ class ContentController {
       }
     }
   }
-   // 删除发贴记录
-   async deletePostByUid (ctx) {
+  // 删除发贴记录
+  async deletePostByUid(ctx) {
     const params = ctx.query
     const obj = await getJWTPayload(ctx.header.authorization)
     const post = await Post.findOne({ uid: obj._id, _id: params.tid })
@@ -312,27 +300,23 @@ class ContentController {
     }
   }
   // 获取用户最近的发贴记录
-  async getPostPublic(ctx){
+  async getPostPublic(ctx) {
     const params = ctx.query
-    const result = await Post.getListByUid(
-      params.uid,
-      params.page,
-      params.limit ? parseInt(params.limit) : 10
-    )
-    if(result.length > 0){
+    const result = await Post.getListByUid(params.uid, params.page, params.limit ? parseInt(params.limit) : 10)
+    if (result.length > 0) {
       ctx.body = {
         code: 200,
         data: result,
         msg: '查询评论列表成功！'
-      } 
-    }else {
+      }
+    } else {
       ctx.body = {
         code: 500,
         msg: '查询评论列表失败了！'
-      } 
+      }
     }
   }
-  async deletePost (ctx){
+  async deletePost(ctx) {
     // const params = ctx.query
     // const result = await Post.deleteOne({ _id: params.tid })
     // if (result.ok === 1) {
@@ -354,16 +338,16 @@ class ContentController {
       msg: '删除帖子成功！'
     }
   }
-  async updatePostByTid(ctx){
-    const { body } = ctx.request 
-    const result = await Post.updateOne({ _id:body._id }, body)
-    if(result.ok === 1){
+  async updatePostByTid(ctx) {
+    const { body } = ctx.request
+    const result = await Post.updateOne({ _id: body._id }, body)
+    if (result.ok === 1) {
       ctx.body = {
         code: 200,
         data: result,
         msg: '更新帖子成功'
       }
-    }else{
+    } else {
       ctx.body = {
         code: 500,
         data: result
@@ -371,7 +355,7 @@ class ContentController {
     }
   }
   // 添加标签
-  async addTag (ctx){
+  async addTag(ctx) {
     const { body } = ctx.request
     const tag = new PostTags(body)
     await tag.save()
@@ -381,7 +365,7 @@ class ContentController {
     }
   }
   // 获得标签
-  async getTags (ctx) {
+  async getTags(ctx) {
     const params = ctx.query
     const page = params.page ? parseInt(params.page) : 0
     const limit = params.limit ? parseInt(params.limit) : 10
@@ -395,7 +379,7 @@ class ContentController {
     }
   }
   // 删除标签
-  async removeTag (ctx) {
+  async removeTag(ctx) {
     const params = ctx.query
     const result = await PostTags.deleteOne({ id: params.ptid })
     ctx.body = {
@@ -406,13 +390,10 @@ class ContentController {
   }
 
   // 更新标签
-  async updateTag (ctx) {
+  async updateTag(ctx) {
     const { body } = ctx.request
-    const result = await PostTags.updateOne(
-      { _id: body._id },
-      body
-    )
-    
+    const result = await PostTags.updateOne({ _id: body._id }, body)
+
     ctx.body = {
       code: 200,
       data: result,
@@ -421,13 +402,10 @@ class ContentController {
   }
 
   // 更新后台用户权限批量设置
-  async updatePostBatch (ctx) {
+  async updatePostBatch(ctx) {
     // console.log(ctx)
     const { body } = ctx.request
-    const result = await Post.updateMany(
-      { _id: { $in: body.ids } },
-      { $set: { ...body.settings } }
-    )
+    const result = await Post.updateMany({ _id: { $in: body.ids } }, { $set: { ...body.settings } })
     ctx.body = {
       code: 200,
       data: result

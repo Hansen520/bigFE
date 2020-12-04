@@ -12,14 +12,13 @@ import { v4 as uuidv4 } from 'uuid'
 import { setValue, getValue } from '../config/RedisConfig'
 
 class LoginController {
-  constructor(){
-  }
+  constructor() {}
   // 忘记密码
   async forget(ctx) {
     const { body } = ctx.request
     const isHasUser = await User.findOne({ username: body.username })
     // console.log(isHasUser)
-    if(!isHasUser){
+    if (!isHasUser) {
       ctx.body = {
         code: 404,
         msg: '当前用户名邮箱不存在'
@@ -31,7 +30,7 @@ class LoginController {
       // 通过忘记密码设置key，然后传递到发送邮箱的方式放到async reset()里面
       setValue(
         key,
-        jsonwebtoken.sign({ _id: isHasUser._id}, config.JWT_SECRET, {
+        jsonwebtoken.sign({ _id: isHasUser._id }, config.JWT_SECRET, {
           expiresIn: '30m'
         }),
         30 * 60
@@ -52,7 +51,7 @@ class LoginController {
         data: result,
         msg: '邮件发送成功'
       }
-    } catch(e) {
+    } catch (e) {
       console.log(e)
     }
   }
@@ -65,7 +64,7 @@ class LoginController {
     // 验证图片验证码的时效性，正确性
     let result = await checkCode(sid, code)
     console.log('check OK')
-    if(result) {
+    if (result) {
       // 验证用户账号是否正确
       let checkUserPasswd = false
       // 数据库查找
@@ -79,16 +78,19 @@ class LoginController {
         const userObj = user.toJSON()
         // const arr = ['password', 'username', 'roles']
         const arr = ['password', 'username']
-        arr.map((item)=>{
+        arr.map((item) => {
           // 删除敏感信息然后再传到前端
           delete userObj[item]
         })
         // 验证通过返回Token
-        let token = jsonwebtoken.sign({_id: userObj._id, exp: Math.floor(Date.now()/1000) + 60 * 60 * 24}, config.JWT_SECRET)
+        let token = jsonwebtoken.sign(
+          { _id: userObj._id, exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 },
+          config.JWT_SECRET
+        )
         // 加入isSign属性,就是做一个标记属性
         const SignRecord = await signRecord.findByUid(userObj._id)
-        if (SignRecord !== null){
-          if(moment(SignRecord.created).format('YYYY-MM-DD') === moment().format('YYYY-MM-DD')){
+        if (SignRecord !== null) {
+          if (moment(SignRecord.created).format('YYYY-MM-DD') === moment().format('YYYY-MM-DD')) {
             userObj.isSign = true
           } else {
             userObj.isSign = false
@@ -116,12 +118,11 @@ class LoginController {
         msg: '图片验证码不正确,请检查！'
       }
     }
-    
   }
   // 注册
   async reg(ctx) {
     // 接收客户端的数据
-    const { body } = ctx.request 
+    const { body } = ctx.request
     // 校验验证码的内容(时效性、有效性)
     let sid = body.sid
     let code = body.code
@@ -129,19 +130,19 @@ class LoginController {
     // 验证图片验证码的时效性，正确性
     let result = await checkCode(sid, code)
     let check = true
-    if ( result ) {
+    if (result) {
       // 查库，看username邮箱是否被注册
-      let user1 = await User.findOne({username: body.username})
+      let user1 = await User.findOne({ username: body.username })
       // 如果库里有username,且不为空
-      if(user1 != null && typeof user1.username !== 'undefined') {
+      if (user1 != null && typeof user1.username !== 'undefined') {
         // console.log(user1)
         msg.username = ['此邮箱已经被注册啦，您可以通过邮箱找回密码！']
         check = false
       }
       // 查库，看name是否被注册
-      let user2 = await User.findOne({name: body.name})
+      let user2 = await User.findOne({ name: body.name })
       // 如果库里有username
-      if(user2 != null && typeof user2.name !== 'undefined') {
+      if (user2 != null && typeof user2.name !== 'undefined') {
         msg.name = ['此昵称已经被注册，请修改噢~']
         check = false
       }
@@ -173,7 +174,7 @@ class LoginController {
     }
   }
   // 重置密码
-  async reset(ctx){
+  async reset(ctx) {
     // 接收客户端的数据
     const { body } = ctx.request
     let sid = body.sid
@@ -181,14 +182,14 @@ class LoginController {
     let msg = {}
     // 验证图片大的正确性，时效性
     let result = await checkCode(sid, code)
-    if(!body.key){
+    if (!body.key) {
       ctx.body = {
         code: 500,
         msg: '请求参数异常，请重新获取链接'
       }
       return
     }
-    if(!result){
+    if (!result) {
       msg.code = ['验证码已经失效，请重新获取！']
       ctx.body = {
         code: 500,
@@ -197,7 +198,7 @@ class LoginController {
       return
     }
     const token = await getValue(body.key)
-    if(token){
+    if (token) {
       const obj = getJWTPayload('Bearer ' + token)
       // 密码加密
       body.password = await bcrypt.hash(body.password, 5)
@@ -218,7 +219,6 @@ class LoginController {
       }
     }
   }
-
 }
 
 export default new LoginController()

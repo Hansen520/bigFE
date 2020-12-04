@@ -14,7 +14,7 @@ import qs from 'qs'
 
 class UserController {
   // 用户签到接口
-  async userSign (ctx) {
+  async userSign(ctx) {
     // 取用户的ID
     // { _id: '5f5340a210faa54588699896', exp: 1600348075, iat: 1600261675 }
     const obj = await getJWTPayload(ctx.header.authorization)
@@ -26,47 +26,47 @@ class UserController {
     let newRecord = {}
     let result = ''
     // 判断签到逻辑
-    if(record !== null){
+    if (record !== null) {
       // 有历史的签到数据
       // 判断用户上一次签到记录的created的事件是否与今天相同
       // 如果当前时间的日期与用户上一次的相同，说明用户已经签到,应该说是同一天签到的
-      if(moment(record.created).format('YYYY-MM-DD') === moment().format('YYYY-MM-DD')){
+      if (moment(record.created).format('YYYY-MM-DD') === moment().format('YYYY-MM-DD')) {
         ctx.body = {
           code: 500,
           favs: user.favs,
           count: user.count,
           lastSign: record.created,
           msg: '用户已经签到'
-        } 
+        }
       } else {
         // 有上一次的签到记录，并且不与今天相同，进行连续签到的判断
         // 如果相同，代表用户在连续签到
         let count = user.count
         let fav = 0
- 
+
         // 判断签到时间: 用户上一次的签到时间等于当前时间的前一天，说明用户在连续签到
         // 第n+1天签到的时候，需要与第n天的created比较
-        if(moment(record.created).format('YYYY-MM-DD') === moment().subtract(1, 'days').format('YYYY-MM-DD')){
+        if (moment(record.created).format('YYYY-MM-DD') === moment().subtract(1, 'days').format('YYYY-MM-DD')) {
           // 连续签到的积分获得逻辑
           count += 1
-          if (count < 5){
+          if (count < 5) {
             fav = 5
-          } else if (count >= 5 && count < 15){
+          } else if (count >= 5 && count < 15) {
             fav = 10
-          } else if(count >= 15 && count < 30){
+          } else if (count >= 15 && count < 30) {
             fav = 15
-          } else if (count >= 30 && count < 100){
+          } else if (count >= 30 && count < 100) {
             fav = 20
-          } else if(count >= 100 && count < 365){
+          } else if (count >= 100 && count < 365) {
             fav = 30
-          } else if(count >= 365){
+          } else if (count >= 365) {
             fav = 50
           }
           await User.updateOne(
-            {_id: obj._id},
+            { _id: obj._id },
             {
               // 就是在原来的数据上递增, 即user.favs += fav， user.count += 1
-              $inc: {favs: fav, count: 1}
+              $inc: { favs: fav, count: 1 }
             }
           )
           result = {
@@ -77,10 +77,10 @@ class UserController {
           // 用户中断了一次签到
           fav = 5
           await User.updateOne(
-            {_id: obj._id},
+            { _id: obj._id },
             {
               $set: { count: 1 },
-              $inc: { favs: fav }// 就是说又重新从5开始加
+              $inc: { favs: fav } // 就是说又重新从5开始加
             }
           )
           result = {
@@ -98,13 +98,15 @@ class UserController {
     } else {
       // 无签到数据(第一次签到)
       // 保存用户的签到数据，签到计数| 积分数据
-      await User.updateOne({
-        _id: obj._id
-      },
-      {
-        $set: { count: 1 },// 将签到次数置为1
-        $inc: { favs: 5 }// 积分数据+5
-      })
+      await User.updateOne(
+        {
+          _id: obj._id
+        },
+        {
+          $set: { count: 1 }, // 将签到次数置为1
+          $inc: { favs: 5 } // 积分数据+5
+        }
+      )
       // 保存用户的签到记录
       newRecord = new SignRecord({
         uid: obj._id,
@@ -125,13 +127,13 @@ class UserController {
   }
 
   // 更新用户基本信息接口
-  async updateUserInfo(ctx){
+  async updateUserInfo(ctx) {
     const { body } = ctx.request
     const obj = await getJWTPayload(ctx.header.authorization)
     // 判断用户是否修改了邮箱
-    const user = await User.findOne({_id: obj._id})
+    const user = await User.findOne({ _id: obj._id })
     let msg = ''
-    if(body.username && body.username !== user.username){
+    if (body.username && body.username !== user.username) {
       // 用户修改了邮箱
       // 发送reset邮件
       // 判断用户的新邮箱是否已经有人注册， 如果该邮箱有人注册则return出去
@@ -164,14 +166,14 @@ class UserController {
       msg = '更新基本资料成功，账号修改需要邮件确认，请注意查收'
     }
     const arr = ['username', 'mobile', 'password']
-    arr.map((item)=> {
+    arr.map((item) => {
       delete body[item]
     })
-    const result = await User.updateOne({_id: obj._id}, body)
-    if(result.n === 1 && result.ok === 1) {
+    const result = await User.updateOne({ _id: obj._id }, body)
+    if (result.n === 1 && result.ok === 1) {
       ctx.body = {
         code: 200,
-        msg: msg === '' ? '更新成功': msg
+        msg: msg === '' ? '更新成功' : msg
       }
     } else {
       ctx.body = {
@@ -181,14 +183,17 @@ class UserController {
     }
   }
   // 更新用户名
-  async updateUsername (ctx) {
+  async updateUsername(ctx) {
     const body = ctx.query
     if (body.key) {
       const token = await getValue(body.key)
       const obj = getJWTPayload('Bearer ' + token)
-      await User.updateOne({ _id: obj._id }, {
-        username: body.username
-      })
+      await User.updateOne(
+        { _id: obj._id },
+        {
+          username: body.username
+        }
+      )
       ctx.body = {
         code: 200,
         msg: '更新用户名成功'
@@ -196,18 +201,18 @@ class UserController {
     }
   }
   // 修改密码接口
-  async changePasswd (ctx) {
+  async changePasswd(ctx) {
     const { body } = ctx.request
     // console.log(body)
     const obj = await getJWTPayload(ctx.header.authorization)
     const user = await User.findOne({ _id: obj._id })
     // console.log(await bcrypt.compare(body.oldpwd, user.password))
     // 密码比对是否相同
-    if (await bcrypt.compare(body.oldpwd, user.password)){
+    if (await bcrypt.compare(body.oldpwd, user.password)) {
       // 加密新密码
       const newpasswd = await bcrypt.hash(body.newpwd, 5)
       // console.log(newpasswd)
-      await User.updateOne({_id: obj._id}, { $set: { password: newpasswd } })
+      await User.updateOne({ _id: obj._id }, { $set: { password: newpasswd } })
       ctx.body = {
         code: 200,
         msg: '更新密码成功'
@@ -220,11 +225,11 @@ class UserController {
     }
   }
   // 设置收藏
-  async setCollect(ctx){
+  async setCollect(ctx) {
     const params = ctx.query
-    
+
     const obj = await getJWTPayload(ctx.header.authorization)
-    if(parseInt(params.isFav)){
+    if (parseInt(params.isFav)) {
       // 说明用户已经收藏了帖子
       await UserCollect.deleteOne({ uid: obj._id, tid: params.tid })
       ctx.body = {
@@ -236,11 +241,10 @@ class UserController {
         title: params.title,
         uid: obj._id,
         tid: params.tid
-        
       })
       // console.log(newCollect)
       const result = await newCollect.save()
-      if(result.uid){
+      if (result.uid) {
         ctx.body = {
           code: 200,
           data: result,
@@ -250,21 +254,17 @@ class UserController {
     }
   }
   // 收藏的贴列表
-  async getCollectByUid(ctx){
+  async getCollectByUid(ctx) {
     const params = ctx.query
     const obj = await getJWTPayload(ctx.header.authorization)
-    const result = await UserCollect.getListByUid(
-      obj._id,
-      params.page,
-      params.limit ? parseInt(params.limit) : 10
-    )
-    if(result.length > 0){
+    const result = await UserCollect.getListByUid(obj._id, params.page, params.limit ? parseInt(params.limit) : 10)
+    if (result.length > 0) {
       ctx.body = {
         code: 200,
         data: result,
         msg: '查询收藏列表成功'
       }
-    }else{
+    } else {
       ctx.body = {
         code: 500,
         msg: '查询收藏列表失败'
@@ -272,7 +272,7 @@ class UserController {
     }
   }
   // 获取用户基本信息
-  async getBasicInfo (ctx) {
+  async getBasicInfo(ctx) {
     const params = ctx.query
     const obj = await getJWTPayload(ctx.header.authorization)
     const uid = params.uid || obj._id
@@ -283,10 +283,10 @@ class UserController {
       const data = moment().format('YYYY-MM-DD ')
       const result = await SignRecord.findOne({
         uid: uid,
-        created: {$gte: data+'00:00:00'}
+        created: { $gte: data + '00:00:00' }
       })
       // 用户签到相关
-      if(result && result.uid){
+      if (result && result.uid) {
         user.isSign = true
       } else {
         user.isSign = false
@@ -300,7 +300,7 @@ class UserController {
   }
   // 获取历史消息
   // 记录评论之后，给作者发送消息
-  async getMsg (ctx) {
+  async getMsg(ctx) {
     const params = ctx.query
     const page = params.page ? parseInt(params.page) : 0
     const limit = params.limit ? parseInt(params.limit) : 0
@@ -317,12 +317,12 @@ class UserController {
   }
 
   // 设置已读消息
-  async setMsg (ctx) {
+  async setMsg(ctx) {
     const params = ctx.query
-    if (params.id){
+    if (params.id) {
       // 用于删除单挑数据(设置为已阅)
-      const result = await Comments.updateOne({_id: params.id}, {isRead: '1'})
-      if(result.ok === 1){
+      const result = await Comments.updateOne({ _id: params.id }, { isRead: '1' })
+      if (result.ok === 1) {
         ctx.body = {
           code: 200
         }
@@ -330,9 +330,9 @@ class UserController {
     } else {
       const obj = await getJWTPayload(ctx.header.authorization)
       // 设置所有数据都已阅
-      const result = await Comments.updateMany({uid: obj._id}, {isRead: '1'})
+      const result = await Comments.updateMany({ uid: obj._id }, { isRead: '1' })
       const num = await Comments.getTotal(obj._id)
-      if(result.ok === 1){
+      if (result.ok === 1) {
         ctx.body = {
           code: 200,
           total: num
@@ -344,7 +344,7 @@ class UserController {
    * 后台接口的定义
    */
   // 获取用户信息
-  async getUsers (ctx) {
+  async getUsers(ctx) {
     let params = ctx.query
     params = qs.parse(params)
     const page = params.page ? parseInt(params.page) : 0
@@ -362,7 +362,7 @@ class UserController {
     }
   }
   // 管理员删除用户
-  async deleteUserById (ctx) { 
+  async deleteUserById(ctx) {
     // const params = ctx.query
     // const user = await User.findOne({ _id: params.id })
     // if (user) {
@@ -372,7 +372,7 @@ class UserController {
     //     data: result,
     //     msg: '删除成功'
     //   }
-    // } else { 
+    // } else {
     //   ctx.body = {
     //     code: 500,
     //     msg: '用户不存在，删除失败'
@@ -389,12 +389,12 @@ class UserController {
     }
   }
   // 管理员编辑模态框后更新用户
-  async updateUserById (ctx) { 
+  async updateUserById(ctx) {
     const { body } = ctx.request
     console.log(body)
     const user = await User.findOne({ _id: body._id })
     // 1.校验用户是否存在-> 用户名是否冲突
-    if (!user) { 
+    if (!user) {
       ctx.body = {
         code: 500,
         msg: '用户不存在或者id信息出现问题！'
@@ -412,7 +412,7 @@ class UserController {
     //     return
     //   }
     // }
-    
+
     // 2.判断密码是否传递->进行加密保存
     if (body.password) {
       body.password = await bcrypt.hash(body.password, 5)
@@ -433,7 +433,7 @@ class UserController {
   }
 
   // 通过校验的方式检查用户名
-  async checkUsername (ctx) {
+  async checkUsername(ctx) {
     const params = ctx.query
     // username是前端传递过来的,第一个为查询出来的数据
     const user = await User.findOne({ username: params.username })
@@ -451,7 +451,7 @@ class UserController {
   }
 
   // 添加用户
-  async addUser (ctx) { 
+  async addUser(ctx) {
     const { body } = ctx.request
     // 密码加密
     body.password = await bcrypt.hash(body.password, 5)
@@ -478,18 +478,14 @@ class UserController {
     }
   }
 
-  async updateUserBatch (ctx) {
+  async updateUserBatch(ctx) {
     // console.log(ctx)
     const { body } = ctx.request
-    const result = await User.updateMany(
-      { _id: { $in: body.ids } },
-      { $set: { ...body.settings } }
-    )
+    const result = await User.updateMany({ _id: { $in: body.ids } }, { $set: { ...body.settings } })
     ctx.body = {
       code: 200,
       data: result
     }
-  
   }
 }
 

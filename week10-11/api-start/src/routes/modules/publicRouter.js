@@ -4,7 +4,7 @@ import contentController from '../../api/ContentController'
 import userController from '../../api/UserController'
 import commentsController from '../../api/CommentsController'
 
-const router = new Router();
+const router = new Router()
 router.prefix('/public')
 router.get('/getChapcha', publicController.getChapcha)
 // 获取文章列表
@@ -27,7 +27,5 @@ router.get('/info', userController.getBasicInfo)
 router.get('/latestPost', contentController.getPostPublic)
 // 获取用户最近的评论记录
 router.get('/latestComment', commentsController.getCommentPublic)
-
-
 
 export default router

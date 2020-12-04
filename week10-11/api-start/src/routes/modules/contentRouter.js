@@ -16,7 +16,7 @@ router.post('/update', contentController.updatePost)
 
 /**
  * 后台相关的接口
-*/
+ */
 // 删除帖子
 router.post('/delete-post', contentController.deletePost)
 
